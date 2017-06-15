@@ -1,41 +1,12 @@
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import pprint
-
-scope = ['https://spreadsheets.google.com/feeds']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-client = gspread.authorize(creds)
-
-sheet = client.open('football').sheet1
-
-pp = pprint.PrettyPrinter()
-
-# result = sheet.col_values(6)
-# pp.pprint(result)
-
-#values_list = sheet.col_values(1)
-#pp.pprint(values_list)
-#footballs = sheet.get_all_records()
-#pp.pprint(footballs)
-
-# i = 1
-# while (sheet.cell(i, 0)):
-#     result = sheet.row_values(6)
-#     # pp.pprint(result))
+import urllib.request
 
 
-def getStatsArray():
-    i = 2
-    result = sheet.cell(i, 1).value
-    listOfNames = list()
+# Download spreadsheet from Google Drive Service
+def download_sheet():
+    url = 'https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1ReoKdwH_t62mnRHEae3f8yq_gYtKH8gTjzlWDOt0TUU&exportFormat=xlsx'
+    file_name = 'data/spreadsheets/football.xlsx'
 
-    while not ('-' in result):
-        result = sheet.cell(i, 1).value
-        # listOfNames.append(listOfNames, result)
-        print(result)
-        i += 1
+    urllib.request.urlretrieve(url, file_name)
 
-    return listOfNames
-
-
-getStatsArray()
+# Check this out
+download_sheet()
