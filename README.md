@@ -1,2 +1,2 @@
 # football-web
-Score tables for football competition
+Create web version of google docs score tables
