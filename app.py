@@ -1,12 +1,16 @@
-from flask import Flask
+from flask import Flask, render_template
 import spreadsheet as ss
+import spreadsheetdriveapi as drive
+import datahandler as dh
 
 app = Flask(__name__)
 
+dataSheet = None
 
 @app.route("/")
 def hello():
-    return "Hello World!"
+    data = dh.getdataframefromfile(dataSheet)
+    return render_template('tables.html', tables=[data.to_html()], titles=[])
 
 
 @app.route("/test")
@@ -14,5 +18,5 @@ def spreadsheet():
     return ss.getStatsArray()
 
 if __name__ == '__main__':
-    app.debug = True
+    dataSheet = drive.downloadxlsx()
     app.run()
