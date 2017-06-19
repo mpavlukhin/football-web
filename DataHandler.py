@@ -1,6 +1,23 @@
 import pandas as pd
-import spreadsheetdriveapi as drive
+import openpyxl as pyxl
+
+
+
+
+def preCreateStatsSheet(sheetname, filepath):
+    wb = pyxl.load_workbook(filepath)
+    # print(wb.get_sheet_names())
+    stat = wb.create_sheet(sheetname, 0)
+    stat.title = sheetname
+    stat.append([''])
+    wb.save(filename=filepath)
+
+
 
 def getdataframefromfile(fileTitle):
-    data = pd.read_excel('data/spreadsheets/' + fileTitle + '.xlsx')
+    filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
+    data = pd.read_excel(filepath)
+    preCreateStatsSheet("NewStats", filepath)
     return data
+
+getdataframefromfile('football')

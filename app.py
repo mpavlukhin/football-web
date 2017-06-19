@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 import spreadsheet as ss
 import spreadsheetdriveapi as drive
-import datahandler as dh
+import DataHandler as dh
 
 app = Flask(__name__)
 
