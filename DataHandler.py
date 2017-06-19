@@ -4,13 +4,28 @@ import openpyxl as pyxl
 # years_included = ('15', '14')
 years_included = ['17']
 
-def preCreateStatsSheet(sheetname, filepath):
+def as_text(value):
+    if value is None:
+        return ""
+    return str(value)
+
+def preCreateStatsSheet(sheetname, filepath): #realized
     wb = pyxl.load_workbook(filepath)
-    # print(wb.get_sheet_names())
-    stat = wb.create_sheet(sheetname, 0)
-    stat.title = sheetname
-    stat.append([''])
+
+    statsSheet = wb.create_sheet(sheetname, 0)
+    statsSheet.title = sheetname
+    statsSheet.append(["Имя", "Победы", "Ничьи", "Поражения", "Всего Игр", "Коэффициент побед", "Коэффициент очков"])
+
     wb.save(filename=filepath)
+
+def getdataframefromfile(fileTitle):
+    filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
+
+    preCreateStatsSheet("NewStats", filepath)
+    findActiveSheets(filepath)
+
+    data = pd.read_excel(filepath)
+    return data
 
 def findActiveSheets(filepath):
     wb = pyxl.load_workbook(filepath)
@@ -38,12 +53,3 @@ def isYearOK(year):
             return True
 
     return False
-
-def getdataframefromfile(fileTitle):
-    filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
-    data = pd.read_excel(filepath)
-    # preCreateStatsSheet("NewStats", filepath)
-    findActiveSheets(filepath=filepath)
-    return data
-
-getdataframefromfile('football')
