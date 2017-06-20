@@ -10,7 +10,7 @@ def getdataframefromfile(fileTitle):
 
     preCreateStatsSheet("NewStats", filepath)
     activeSheets = findActiveSheets(filepath)
-    fillPersons(activeSheets)
+    fillPersons(activeSheets, filepath)
 
     data = pd.read_excel(filepath)
     return data
