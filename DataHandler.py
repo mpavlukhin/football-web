@@ -1,6 +1,5 @@
 import pandas as pd
 import openpyxl as pyxl
-import datetime as dt
 
 # years_included = ('15', '14')
 years_included = ['12', '13']
@@ -11,6 +10,15 @@ def getdataframefromfile(fileTitle):
     preCreateStatsSheet("NewStats", filepath)
     activeSheets = findActiveSheets(filepath)
     fillPersons(activeSheets)
+
+    data = pd.read_excel(filepath)
+    return data
+
+def getdataframefromfile(fileTitle):
+    filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
+
+    preCreateStatsSheet("NewStats", filepath)
+    findActiveSheets(filepath)
 
     data = pd.read_excel(filepath)
     return data
@@ -55,20 +63,3 @@ def isYearOK(year):
             return True
 
     return False
-
-def fillPersons(activeSheets):
-    for sheetName in activeSheets:
-        print('\nThis sheet is ' + sheetName)
-        temp = sheetName
-        if (sheetName.__len__() == 3):
-            temp = '0' + sheetName
-
-        month = temp[0:2:1]
-        year = temp[-2::1]
-
-        print('month: ' + month + " year: " + year)
-
-        footballDate = dt.date(2000 + int(year), int(month), 1)
-        print(footballDate)
-
-        # values = getColumnNamesRange(currentSheet)
