@@ -30,7 +30,7 @@ def preCreateStatsSheet(sheetname, filepath): #realized
     wb.save(filename=filepath)
 
 def findActiveSheets(filepath):
-    wb = pyxl.load_workbook(filepath)
+    wb = pyxl.load_workbook(filepath, data_only=True)
 
     ws = wb.get_sheet_names()
 
@@ -78,3 +78,45 @@ def fillPersons(activeSheets, filePath):
         row += 1
 
     wb.save(filename=filePath)
+
+def getColumnNamesRange(currentSheet):
+    range = []
+    startrow = 4000 #example max people
+    rows = currentSheet.max_row
+    maxrows = None
+    titledata = (str)(currentSheet.title)
+    titleyear = (int)(titledata[-2:])
+    titlemonth = (int)(titledata.replace(' ', '')[:-2])
+    # case 1 Current date - 12/13 (First column)
+    if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
+        for cell in currentSheet['A']:
+            if(cell.value == 'Аренда'):
+                startrow = (int)(cell.row)
+            if(cell.value == '' or cell.value == None):
+                break
+            if((int)(cell.row) > startrow):
+                range.append(cell.value)
+
+    #Case 2 12/13 - 04/13 Second column(First column have numeration)
+    elif(titleyear == 13 and (titlemonth >= 4 and titlemonth <= 12)):
+        for cell in currentSheet['B']:
+            if(cell.value == 'Аренда'):
+                startrow = (int)(cell.row)
+            if(cell.value == '' or cell.value == None):
+                break
+            if ((int)(cell.row) > startrow):
+                range.append(cell.value)
+    else:
+        for cell in currentSheet['B']:
+            if(cell.value == "счет" or cell.value == "Сумма"):
+                break
+            else:
+                range.append(cell.value)
+
+
+    for people in range:
+        if people == "Guests":
+            range.remove("Guests")
+        elif people == "Guests ":
+            range.remove("Guests ")
+    return range
