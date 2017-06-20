@@ -56,19 +56,25 @@ def isYearOK(year):
 
     return False
 
-def fillPersons(activeSheets):
+def fillPersons(activeSheets, filePath):
+    footballPlayers = set()
+
     for sheetName in activeSheets:
         print('\nThis sheet is ' + sheetName)
-        temp = sheetName
-        if (sheetName.__len__() == 3):
-            temp = '0' + sheetName
 
-        month = temp[0:2:1]
-        year = temp[-2::1]
+        temp = set(getColumnNamesRange(sheetName))
 
-        print('month: ' + month + " year: " + year)
+        footballPlayers.update(temp)
+        print('List of football players on this sheet:')
+        for playerName in footballPlayers:
+            print(playerName)
 
-        footballDate = dt.date(2000 + int(year), int(month), 1)
-        print(footballDate)
+    wb = pyxl.load_workbook(filePath)
+    statsSheet = wb.get_sheet_by_name('NewStats')
 
-        # values = getColumnNamesRange(currentSheet)
+    row = 2
+    for playerName in footballPlayers:
+        statsSheet.cell(row=row, column=1).value = playerName
+        row += 1
+
+    wb.save(filename=filePath)
