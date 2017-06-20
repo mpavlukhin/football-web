@@ -63,17 +63,17 @@ def fillPersons(activeSheets, filePath):
     footballPlayers = set()
 
     for sheetName in activeSheets:
-        print('\nThis sheet is ' + sheetName)
+        # print('\nThis sheet is ' + sheetName)
 
-        temp = set(getColumnNamesRange(sheetName))
+        temp = set(getColumnNamesRange(sheetName, filePath))
 
         # if temp.__contains__(None):
         #     print('NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE')
 
         footballPlayers.update(temp)
-        print('List of football players on this sheet:')
-        for playerName in footballPlayers:
-            print(playerName)
+        # print('List of football players on this sheet:')
+        # for playerName in footballPlayers:
+        #     print(playerName)
 
     wb = pyxl.load_workbook(filePath)
     statsSheet = wb.get_sheet_by_name(newStats)
@@ -87,17 +87,20 @@ def fillPersons(activeSheets, filePath):
 
     return footballPlayers
 
-def getColumnNamesRange(currentSheet):
+def getColumnNamesRange(currentSheet, filepath):
+    wb = pyxl.load_workbook(filepath, data_only=True)
+    ws = wb.get_sheet_by_name(currentSheet)
     range = []
     startrow = 4000 #example max people
-    rows = currentSheet.max_row
+    rows = ws.max_row
     maxrows = None
-    titledata = (str)(currentSheet.title)
+    titledata = ws.title
     titleyear = (int)(titledata[-2:])
     titlemonth = (int)(titledata.replace(' ', '')[:-2])
+
     # case 1 Current date - 12/13 (First column)
     if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
-        for cell in currentSheet['A']:
+        for cell in ws['A']:
             if(cell.value == 'Аренда'):
                 startrow = (int)(cell.row)
             if(cell.value == '' or cell.value == None):
@@ -107,7 +110,7 @@ def getColumnNamesRange(currentSheet):
 
     #Case 2 12/13 - 04/13 Second column(First column have numeration)
     elif(titleyear == 13 and (titlemonth >= 4 and titlemonth <= 12)):
-        for cell in currentSheet['B']:
+        for cell in ws['B']:
             if(cell.value == 'Аренда'):
                 startrow = (int)(cell.row)
             if(cell.value == '' or cell.value == None):
@@ -115,7 +118,7 @@ def getColumnNamesRange(currentSheet):
             if ((int)(cell.row) > startrow):
                 range.append(cell.value)
     else:
-        for cell in currentSheet['B']:
+        for cell in ws['B']:
             if(cell.value == "счет" or cell.value == "Сумма"):
                 break
             else:
