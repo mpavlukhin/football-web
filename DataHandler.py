@@ -1,16 +1,19 @@
 import pandas as pd
 import openpyxl as pyxl
-import datetime as dt
 
-# years_included = ('15', '14')
 years_included = ['12', '13']
+newStats = 'NewStats'
 
 def getdataframefromfile(fileTitle):
     filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
 
-    preCreateStatsSheet("NewStats", filepath)
+    preCreateStatsSheet(newStats, filepath)
     activeSheets = findActiveSheets(filepath)
-    fillPersons(activeSheets, filepath)
+    persons = fillPersons(activeSheets, filepath)
+
+    for person in persons:
+        print(person + 'is analyzing...')
+        analyzePerson(person, filepath)
 
     data = pd.read_excel(filepath)
     return data
@@ -64,13 +67,16 @@ def fillPersons(activeSheets, filePath):
 
         temp = set(getColumnNamesRange(sheetName))
 
+        # if temp.__contains__(None):
+        #     print('NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE')
+
         footballPlayers.update(temp)
         print('List of football players on this sheet:')
         for playerName in footballPlayers:
             print(playerName)
 
     wb = pyxl.load_workbook(filePath)
-    statsSheet = wb.get_sheet_by_name('NewStats')
+    statsSheet = wb.get_sheet_by_name(newStats)
 
     row = 2
     for playerName in footballPlayers:
@@ -78,6 +84,8 @@ def fillPersons(activeSheets, filePath):
         row += 1
 
     wb.save(filename=filePath)
+
+    return footballPlayers
 
 def getColumnNamesRange(currentSheet):
     range = []
@@ -120,3 +128,15 @@ def getColumnNamesRange(currentSheet):
         elif people == "Guests ":
             range.remove("Guests ")
     return range
+
+def analyzePerson(person, filePath):
+    wins = 0
+    wins_2_out_of_3_teams = 0
+    lost = 0
+    total = 0
+    draws = 0
+    coeff = 0
+    coeffPoints = 0
+
+    wb = pyxl.load_workbook(filePath)
+    sheet = wb.get_sheet_by_name(newStats)
