@@ -38,7 +38,7 @@ def preCreateStatsSheet(sheetname, filepath): #realized
     wb.save(filename=filepath)
 
 def findActiveSheets(filepath):
-    wb = pyxl.load_workbook(filepath)
+    wb = pyxl.load_workbook(filepath, data_only=True)
 
     ws = wb.get_sheet_names()
 
@@ -70,8 +70,7 @@ def getColumnNamesRange(currentSheet):
     maxrows = None
     titledata = (str)(currentSheet.title)
     titleyear = (int)(titledata[-2:])
-    titlemonth = (int)(titledata.replace(titledata,titledata[-2:]))
-    print("titlemonth =", titlemonth, "titleyear=",titleyear)
+    titlemonth = (int)(titledata.replace(' ', '')[:-2])
     # case 1 Current date - 12/13 (First column)
     if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
         for cell in currentSheet['A']:
@@ -82,17 +81,15 @@ def getColumnNamesRange(currentSheet):
             if((int)(cell.row) > startrow):
                 range.append(cell.value)
 
-        return range
     #Case 2 12/13 - 04/13 Second column(First column have numeration)
     elif(titleyear == 13 and (titlemonth >= 4 and titlemonth <= 12)):
         for cell in currentSheet['B']:
             if(cell.value == 'Аренда'):
                 startrow = (int)(cell.row)
             if(cell.value == '' or cell.value == None):
-                maxrows = (int)(cell.row)
                 break
-        range = maxrows - startrow
-        return range
+            if ((int)(cell.row) > startrow):
+                range.append(cell.value)
     else:
         for cell in currentSheet['B']:
             if(cell.value == "счет" or cell.value == "Сумма"):
@@ -100,4 +97,18 @@ def getColumnNamesRange(currentSheet):
             else:
                 range.append(cell.value)
 
-        return range
+
+    for people in range:
+        if people == "Guests":
+            range.remove("Guests")
+        elif people == "Guests ":
+            range.remove("Guests ")
+    return range
+
+wb = pyxl.load_workbook("data/spreadsheets/football.xlsx")
+statsSheet = wb["0517"]
+
+test = getColumnNamesRange(statsSheet)
+print(test)
+
+
