@@ -61,5 +61,43 @@ def isYearOK(year):
     for years in years_included:
         if (year[-2::1].rfind(years) != -1):
             return True
-
     return False
+
+def getColumnNamesRange(currentSheet):
+    range = []
+    startrow = 4000 #example max people
+    rows = currentSheet.max_row
+    maxrows = None
+    titledata = (str)(currentSheet.title)
+    titleyear = (int)(titledata[-2:])
+    titlemonth = (int)(titledata.replace(titledata,titledata[-2:]))
+    print("titlemonth =", titlemonth, "titleyear=",titleyear)
+    # case 1 Current date - 12/13 (First column)
+    if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
+        for cell in currentSheet['A']:
+            if(cell.value == 'Аренда'):
+                startrow = (int)(cell.row)
+            if(cell.value == '' or cell.value == None):
+                break
+            if((int)(cell.row) > startrow):
+                range.append(cell.value)
+
+        return range
+    #Case 2 12/13 - 04/13 Second column(First column have numeration)
+    elif(titleyear == 13 and (titlemonth >= 4 and titlemonth <= 12)):
+        for cell in currentSheet['B']:
+            if(cell.value == 'Аренда'):
+                startrow = (int)(cell.row)
+            if(cell.value == '' or cell.value == None):
+                maxrows = (int)(cell.row)
+                break
+        range = maxrows - startrow
+        return range
+    else:
+        for cell in currentSheet['B']:
+            if(cell.value == "счет" or cell.value == "Сумма"):
+                break
+            else:
+                range.append(cell.value)
+
+        return range
