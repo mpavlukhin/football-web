@@ -1,5 +1,6 @@
 import pandas as pd
 import openpyxl as pyxl
+import numpy as np
 
 years_included = ['12', '13']
 newStats = 'NewStats'
@@ -7,12 +8,14 @@ newStats = 'NewStats'
 def getdataframefromfile(fileTitle):
     filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
 
+    rangevalues = np.array([]   )
+
     preCreateStatsSheet(newStats, filepath)
     activeSheets = findActiveSheets(filepath)
-    persons = fillPersons(activeSheets, filepath)
+    persons = fillPersons(activeSheets, filepath, rangevalues)
 
     for person in persons:
-        print(person + 'is analyzing...')
+        # print(person + ' is analyzing...')
         analyzePerson(person, filepath)
 
     data = pd.read_excel(filepath)
@@ -59,13 +62,13 @@ def isYearOK(year):
 
     return False
 
-def fillPersons(activeSheets, filePath):
+def fillPersons(activeSheets, filePath, rangevalues):
     footballPlayers = set()
 
     for sheetName in activeSheets:
         # print('\nThis sheet is ' + sheetName)
 
-        temp = set(getColumnNamesRange(sheetName, filePath))
+        temp = set(getColumnNamesRange(sheetName, filePath, rangevalues))
 
         # if temp.__contains__(None):
         #     print('NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE')
@@ -87,9 +90,10 @@ def fillPersons(activeSheets, filePath):
 
     return footballPlayers
 
-def getColumnNamesRange(currentSheet, filepath):
+def getColumnNamesRange(currentSheet, filepath, rangevalues):
     wb = pyxl.load_workbook(filepath, data_only=True)
     ws = wb.get_sheet_by_name(currentSheet)
+
     range = []
     startrow = 4000 #example max people
     rows = ws.max_row
@@ -97,6 +101,8 @@ def getColumnNamesRange(currentSheet, filepath):
     titledata = ws.title
     titleyear = (int)(titledata[-2:])
     titlemonth = (int)(titledata.replace(' ', '')[:-2])
+
+
 
     # case 1 Current date - 12/13 (First column)
     if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
@@ -143,3 +149,8 @@ def analyzePerson(person, filePath):
 
     wb = pyxl.load_workbook(filePath)
     sheet = wb.get_sheet_by_name(newStats)
+
+
+
+
+
