@@ -1,4 +1,4 @@
-body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;}
+body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size: 18px}
 a, h1, h2       { color: #377ba8; }
 h1, h2          { margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
@@ -8,15 +8,16 @@ table.dataframe, .dataframe th, .dataframe td {
   border: none;
   border-bottom: 1px solid #C8C8C8;
   border-collapse: collapse;
-  text-align:left;
+  text-align: center;
   padding: 10px;
   margin-bottom: 40px;
   font-size: 0.9em;
 }
 
 .dataframe th {
-    background-color: #add8e6;
+    background-color: #327dff;
     color: white;
+    font-size: 20px;
 }
 
 tr:nth-child(odd)		{ background-color:#eee; }
