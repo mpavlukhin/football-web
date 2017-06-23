@@ -5,7 +5,7 @@ from openpyxl.styles import Color, PatternFill, Font, Border
 from openpyxl.styles import colors
 from openpyxl.cell import Cell
 
-years_included = ['12', '13']
+years_included = ['17']
 newStats = 'NewStats'
 
 def getdataframefromfile(fileTitle):
@@ -15,11 +15,17 @@ def getdataframefromfile(fileTitle):
 
     preCreateStatsSheet(newStats, filepath)
     activeSheets = findActiveSheets(filepath)
-    persons = fillPersons(activeSheets, filepath, rangevalues)
 
-    for person in persons:
-        # print(person + ' is analyzing...')
-        analyzePerson(person, filepath)
+    persons = np.empty([0, 4])
+    for sheetName in activeSheets:
+        currentsheet = getColumnNamesRange(sheetName, filepath)
+        print('\n\n')
+        persons = np.concatenate((persons, currentsheet), axis=0)
+        print(persons)
+
+        # np.dstack(persons, currentsheet)
+        # print(persons)
+    analyzePersons(persons, filepath)
 
     data = pd.read_excel(filepath)
     return data
@@ -71,7 +77,7 @@ def fillPersons(activeSheets, filePath, rangevalues):
     for sheetName in activeSheets:
         # print('\nThis sheet is ' + sheetName)
 
-        temp = set(getColumnNamesRange(sheetName, filePath, rangevalues))
+        temp = set(getColumnNamesRange(sheetName, filePath))
 
         # if temp.__contains__(None):
         #     print('NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE')
@@ -93,14 +99,14 @@ def fillPersons(activeSheets, filePath, rangevalues):
 
     return footballPlayers
 
-def getColumnNamesRange(currentSheet, filepath, rangevalues):
+def getColumnNamesRange(currentSheet, filepath):
     wb = pyxl.load_workbook(filepath, data_only=True)
     ws = wb.get_sheet_by_name(currentSheet)
 
     range = []
-    rangestats = []
+    rangestats = np.empty([0, 4])
     startrow = 4000 #example max people
-    scorerow = 0;
+    scorerow = 0
     scorecell = ws['A1']
     stringscore = ''
     scorearray = []
@@ -166,7 +172,7 @@ def getColumnNamesRange(currentSheet, filepath, rangevalues):
                 valuelist.append(wingames)
                 valuelist.append(drawgames)
                 valuelist.append(totalgames)
-                rangestats.append(valuelist)
+                rangestats = np.vstack((rangestats, valuelist))
 
                 wingames = 0
                 totalgames = 0
@@ -214,7 +220,7 @@ def getColumnNamesRange(currentSheet, filepath, rangevalues):
                 valuelist.append(wingames)
                 valuelist.append(drawgames)
                 valuelist.append(totalgames)
-                rangestats.append(valuelist)
+                rangestats = np.vstack((rangestats, valuelist))
 
                 wingames = 0
                 totalgames = 0
@@ -260,7 +266,7 @@ def getColumnNamesRange(currentSheet, filepath, rangevalues):
                 valuelist.append(wingames)
                 valuelist.append(drawgames)
                 valuelist.append(totalgames)
-                rangestats.append(valuelist)
+                rangestats = np.vstack((rangestats, valuelist))
 
                 wingames = 0
                 drawgames = 0
@@ -270,30 +276,31 @@ def getColumnNamesRange(currentSheet, filepath, rangevalues):
 
 def analyzePersons(persons, filePath):
     # TEST DATA ARRAY
-    persons = np.array([
-        ['name1', 10, 1, 12],
-        ['name2', 5, 3, 10],
-        ['name3', 3, 1, 11],
-        ['name4', 2, 1, 4],
-        ['name1', 7, 1, 10],
-        ['name5', 5, 2, 10],
-        ['name1', 3, 2, 5],
-        ['name2', 3, 5, 10],
-        ['name1', 5, 1, 7],
+    # persons = np.array([
+    #     ['name1', 10, 1, 12],
+    #     ['name2', 5, 3, 10],
+    #     ['name3', 3, 1, 11],
+    #     ['name4', 2, 1, 4],
+    #     ['name1', 7, 1, 10],
+    #     ['name5', 5, 2, 10],
+    #     ['name1', 3, 2, 5],
+    #     ['name2', 3, 5, 10],
+    #     ['name1', 5, 1, 7],
+    #
+    #     ['Clenov', 1, 0, 4], # 12/13
+    #     ['Clenov', 2, 1, 3], # 11/13
+    #                          # 10/13
+    #     ['Clenov', 2, 1, 4], # 09/13
+    #     ['Clenov', 2, 0, 4], # 08/13
+    #                          # 07/13
+    #     ['Clenov', 3, 0, 7], # 06/13
+    #     ['Clenov', 0, 0, 2], # 05/13
+    #                          # 04/13
+    #     ['Clenov', 0, 0, 2], # 03/13
+    #     ['Clenov', 1, 0, 2], # 02/13
+    #     ['Clenov', 2, 0, 5]  # 01/13
+    # ])
 
-        ['Clenov', 1, 0, 4], # 12/13
-        ['Clenov', 2, 1, 3], # 11/13
-                             # 10/13
-        ['Clenov', 2, 1, 4], # 09/13
-        ['Clenov', 2, 0, 4], # 08/13
-                             # 07/13
-        ['Clenov', 3, 0, 7], # 06/13
-        ['Clenov', 0, 0, 2], # 05/13
-                             # 04/13
-        ['Clenov', 0, 0, 2], # 03/13
-        ['Clenov', 1, 0, 2], # 02/13
-        ['Clenov', 2, 0, 5]  # 01/13
-    ])
     # END TEST DATA ARRAY
 
     wb = pyxl.load_workbook(filePath)
