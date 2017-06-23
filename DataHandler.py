@@ -1,11 +1,8 @@
 import pandas as pd
 import openpyxl as pyxl
 import numpy as np
-from openpyxl.styles import Color, PatternFill, Font, Border
-from openpyxl.styles import colors
-from openpyxl.cell import Cell
 
-years_included = ['17']
+years_included = ['16']
 newStats = 'NewStats'
 
 def getdataframefromfile(fileTitle):
@@ -19,12 +16,8 @@ def getdataframefromfile(fileTitle):
     persons = np.empty([0, 4])
     for sheetName in activeSheets:
         currentsheet = getColumnNamesRange(sheetName, filepath)
-        print('\n\n')
         persons = np.concatenate((persons, currentsheet), axis=0)
-        print(persons)
 
-        # np.dstack(persons, currentsheet)
-        # print(persons)
     analyzePersons(persons, filepath)
 
     data = pd.read_excel(filepath)
@@ -70,34 +63,6 @@ def isYearOK(year):
             return True
 
     return False
-
-def fillPersons(activeSheets, filePath, rangevalues):
-    footballPlayers = set()
-
-    for sheetName in activeSheets:
-        # print('\nThis sheet is ' + sheetName)
-
-        temp = set(getColumnNamesRange(sheetName, filePath))
-
-        # if temp.__contains__(None):
-        #     print('NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE')
-
-        footballPlayers.update(temp)
-        # print('List of football players on this sheet:')
-        # for playerName in footballPlayers:
-        #     print(playerName)
-
-    wb = pyxl.load_workbook(filePath)
-    statsSheet = wb.get_sheet_by_name(newStats)
-
-    row = 2
-    for playerName in footballPlayers:
-        statsSheet.cell(row=row, column=1).value = playerName
-        row += 1
-
-    wb.save(filename=filePath)
-
-    return footballPlayers
 
 def getColumnNamesRange(currentSheet, filepath):
     wb = pyxl.load_workbook(filepath, data_only=True)
@@ -275,34 +240,7 @@ def getColumnNamesRange(currentSheet, filepath):
     return rangestats
 
 def analyzePersons(persons, filePath):
-    # TEST DATA ARRAY
-    # persons = np.array([
-    #     ['name1', 10, 1, 12],
-    #     ['name2', 5, 3, 10],
-    #     ['name3', 3, 1, 11],
-    #     ['name4', 2, 1, 4],
-    #     ['name1', 7, 1, 10],
-    #     ['name5', 5, 2, 10],
-    #     ['name1', 3, 2, 5],
-    #     ['name2', 3, 5, 10],
-    #     ['name1', 5, 1, 7],
-    #
-    #     ['Clenov', 1, 0, 4], # 12/13
-    #     ['Clenov', 2, 1, 3], # 11/13
-    #                          # 10/13
-    #     ['Clenov', 2, 1, 4], # 09/13
-    #     ['Clenov', 2, 0, 4], # 08/13
-    #                          # 07/13
-    #     ['Clenov', 3, 0, 7], # 06/13
-    #     ['Clenov', 0, 0, 2], # 05/13
-    #                          # 04/13
-    #     ['Clenov', 0, 0, 2], # 03/13
-    #     ['Clenov', 1, 0, 2], # 02/13
-    #     ['Clenov', 2, 0, 5]  # 01/13
-    # ])
-
-    # END TEST DATA ARRAY
-
+    # Open file
     wb = pyxl.load_workbook(filePath)
     statsSheet = wb.get_sheet_by_name(newStats)
 
@@ -330,12 +268,18 @@ def analyzePersons(persons, filePath):
         footballplayerdraws = int(persons[k,2])
         footballplayernumofgames = int(persons[k,3])
 
-        footballplayervictoryrate = str(int((footballplayerwins / footballplayernumofgames) * 100)) + '%'
-        footballplayerscorerate = str(
-            int(((footballplayerwins * 3 + footballplayerdraws) / (footballplayernumofgames * 3)) * 100)) + '%'
+        try:
+            footballplayervictoryrate = str(int((footballplayerwins / footballplayernumofgames) * 100)) + '%'
+            footballplayerscorerate = str(
+                int(((footballplayerwins * 3 + footballplayerdraws) / (footballplayernumofgames * 3)) * 100)) + '%'
+
+        except ZeroDivisionError:
+            footballplayervictoryrate = '0'
+            footballplayerscorerate = '0'
 
         # Set info to the stats
         row = i + 2
+        statsSheet.cell(row=row, column=1).value = footballplayername
         statsSheet.cell(row=row, column=2).value = footballplayerwins
         statsSheet.cell(row=row, column=3).value = footballplayerdraws
         statsSheet.cell(row=row, column=4).value = footballplayernumofgames - footballplayerwins - footballplayerdraws

@@ -12,6 +12,7 @@ app = Flask(__name__)
 dataSheet = None
 data = None
 
+
 @app.route("/update")
 def gettables():
     global data, dataSheet
