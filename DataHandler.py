@@ -1,8 +1,12 @@
 import pandas as pd
 import openpyxl as pyxl
 import numpy as np
+from openpyxl.styles import Color, PatternFill, Font, Border
+from openpyxl.styles import colors
+from openpyxl.cell import Cell
 
-years_included = ['12', '13']
+
+years_included = ['11']
 newStats = 'NewStats'
 
 def getdataframefromfile(fileTitle):
@@ -15,7 +19,7 @@ def getdataframefromfile(fileTitle):
     persons = fillPersons(activeSheets, filepath, rangevalues)
 
     for person in persons:
-        # print(person + ' is analyzing...')
+        print(person + ' is analyzing...')
         analyzePerson(person, filepath)
 
     data = pd.read_excel(filepath)
@@ -95,48 +99,175 @@ def getColumnNamesRange(currentSheet, filepath, rangevalues):
     ws = wb.get_sheet_by_name(currentSheet)
 
     range = []
+    rangestats = []
     startrow = 4000 #example max people
+    scorerow = 0;
+    scorecell = ws['A1']
+    stringscore = ''
+    scorearray = []
     rows = ws.max_row
     maxrows = None
     titledata = ws.title
     titleyear = (int)(titledata[-2:])
     titlemonth = (int)(titledata.replace(' ', '')[:-2])
-
-
-
+    lastcolumn = 0
+    index = 0
+    valuelist = []
+    wingames = 0
+    drawgames = 0
+    totalgames = 0
+    cellcolor = ''
+    bluecolor = 'FF0000FF'
+    redcolor =  'FFFF0000'
+    whitecolor = '00000000' # or 'FFFFFFFF'
+    greencolor =  'FF6AA84F'
+    yellowcolor = 'FFFFFF00'
+    darkgreencolor = 'FF38761D'
     # case 1 Current date - 12/13 (First column)
-    if((titleyear >= 13 and titlemonth >= 12) or titleyear >= 14):
+    if((titleyear >= 13 and titlemonth > 12) or titleyear >= 14):
+        for cell in ws[1]:
+            if (cell.value == 'Оплата'):
+                lastcolumn = cell.column
+                break
         for cell in ws['A']:
             if(cell.value == 'Аренда'):
                 startrow = (int)(cell.row)
+            if(cell.value == 'счет' or cell.value == 'счёт'):
+                scorecell = cell
+                scorerow = cell.row
             if(cell.value == '' or cell.value == None):
                 break
-            if((int)(cell.row) > startrow):
+            if((int)(cell.row) > startrow and cell.value != 'Guests ' and cell.value != 'Guests'):
+
+                for cellscore in ws[scorecell.row]:
+                    if(cellscore.fill.start_color.index == yellowcolor):
+                        break
+                    currentcell = ws[(str)(cellscore.column) + (str)(cell.row)]
+                    if (cellscore.column > 'B' and cellscore.column < lastcolumn and cellscore.value != None and currentcell.value != None and currentcell.value != ''):
+                        cellcolor = cellscore.fill.start_color.index
+                        currentcellcolor = currentcell.fill.start_color.index
+                        if(cellcolor == whitecolor):
+                            totalgames += 1
+                            drawgames += 1
+                        if (cellcolor == redcolor):
+                            if (currentcellcolor == redcolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == bluecolor):
+                                totalgames += 1
+                        elif (cellcolor == bluecolor):
+                            if (currentcellcolor == bluecolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == redcolor):
+                                totalgames += 1
+
                 range.append(cell.value)
+                valuelist.append(cell.value)
+                valuelist.append(wingames)
+                valuelist.append(drawgames)
+                valuelist.append(totalgames)
+                rangestats.append(valuelist)
+
+                wingames = 0
+                totalgames = 0
+                drawgames = 0
+                valuelist = []
 
     #Case 2 12/13 - 04/13 Second column(First column have numeration)
     elif(titleyear == 13 and (titlemonth >= 4 and titlemonth <= 12)):
         for cell in ws['B']:
+            if (cell.value == 'счет' or cell.value == 'счёт'):
+                scorecell = cell
+                scorerow = cell.row
+            if (cell.value == '' or cell.value == None):
+                break
             if(cell.value == 'Аренда'):
                 startrow = (int)(cell.row)
             if(cell.value == '' or cell.value == None):
                 break
-            if ((int)(cell.row) > startrow):
+            if((int)(cell.row) > startrow and cell.value != 'Guests ' and cell.value != 'Guests'):
+
+                for cellscore in ws[scorecell.row]:
+                    if(cellscore.fill.start_color.index == yellowcolor):
+                        break
+                    currentcell = ws[(str)(cellscore.column) + (str)(cell.row)]
+                    if (cellscore.column > 'B' and cellscore.value != None and currentcell.value != None and currentcell.value != ''):
+                        cellcolor = cellscore.fill.start_color.index
+                        currentcellcolor = currentcell.fill.start_color.index
+                        if(cellcolor == darkgreencolor):
+                            totalgames += 1
+                            drawgames += 1
+                        if (cellcolor == redcolor):
+                            if (currentcellcolor == redcolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == bluecolor):
+                                totalgames += 1
+                        elif (cellcolor == bluecolor):
+                            if (currentcellcolor == bluecolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == redcolor):
+                                totalgames += 1
                 range.append(cell.value)
+                valuelist.append(cell.value)
+                valuelist.append(wingames)
+                valuelist.append(drawgames)
+                valuelist.append(totalgames)
+                rangestats.append(valuelist)
+
+                wingames = 0
+                totalgames = 0
+                drawgames = 0
+                valuelist = []
+
     else:
+        scorecell = ws['A1']
         for cell in ws['B']:
-            if(cell.value == "счет" or cell.value == "Сумма"):
+            if(cell.value == 'счет'):
+                scorecell = cell
+                startrow = 1
                 break
-            else:
+        for cell in ws['B']:
+            if(cell.value == '' or cell.value == None or cell.value == 'Сумма' or cell.value == 'счет'):
+                break
+            if((int)(cell.row) >= startrow and cell.value != 'Guests ' and cell.value != 'Guests'):
+
+                for cellscore in ws[scorecell.row]:
+                    if(cellscore.fill.start_color.index == yellowcolor):
+                        break
+                    currentcell = ws[(str)(cellscore.column) + (str)(cell.row)]
+                    if (cellscore.column > 'B' and currentcell.value != None and currentcell.value != ''):
+                        cellcolor = cellscore.fill.start_color.index
+                        currentcellcolor = currentcell.fill.start_color.index
+                        if(cellcolor == whitecolor):
+                            totalgames += 1
+                            drawgames += 1
+                        if (cellcolor == redcolor):
+                            if (currentcellcolor == redcolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == bluecolor):
+                                totalgames += 1
+                        elif (cellcolor == bluecolor):
+                            if (currentcellcolor == bluecolor):
+                                wingames += 1
+                                totalgames += 1
+                            elif(currentcellcolor == redcolor):
+                                totalgames += 1
                 range.append(cell.value)
+                valuelist.append(cell.value)
+                valuelist.append(wingames)
+                valuelist.append(drawgames)
+                valuelist.append(totalgames)
+                rangestats.append(valuelist)
 
-
-    for people in range:
-        if people == "Guests":
-            range.remove("Guests")
-        elif people == "Guests ":
-            range.remove("Guests ")
-    return range
+                wingames = 0
+                drawgames = 0
+                totalgames = 0
+                valuelist = []
+    return rangestats
 
 def analyzePerson(person, filePath):
     wins = 0
@@ -147,9 +278,8 @@ def analyzePerson(person, filePath):
     coeff = 0
     coeffPoints = 0
 
-    wb = pyxl.load_workbook(filePath)
-    sheet = wb.get_sheet_by_name(newStats)
-
+A = np.array([])
+getdataframefromfile("football")
 
 
 
