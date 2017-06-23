@@ -190,7 +190,7 @@ def analyzePersons(persons, filePath):
 
         footballplayervictoryrate = str(int((footballplayerwins / footballplayernumofgames) * 100)) + '%'
         footballplayerscorerate = str(
-            int(((footballplayerwins * 3 + footballplayerdraws * 1.5) / (footballplayernumofgames * 3)) * 100)) + '%'
+            int(((footballplayerwins * 3 + footballplayerdraws) / (footballplayernumofgames * 3)) * 100)) + '%'
 
         # Set info to the stats
         row = i + 2
