@@ -50,7 +50,3 @@ JOIN Players P
 ON MPSG.PlayerID = P.PlayerID
 JOIN SoccerGames SG
 ON MPSG.SoccerGameID = SG.SoccerGameID;
-
-
-USE mysql;
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';
