@@ -13,6 +13,12 @@ dataSheet = None
 data = None
 
 
+@app.route("/testdb")
+def testdatabase():
+    dataDB = dh.testdb()
+    # return str(data)
+    return render_template('table.html', tables=[dataDB.to_html()], titles=[])
+
 @app.route("/update")
 def gettables():
     global data, dataSheet
@@ -40,6 +46,6 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    dataSheet = drive.downloadxlsx()
+    dataSheet = drive.downloadxlsx('football')
     app.run()
     redirect("../")

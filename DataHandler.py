@@ -2,8 +2,11 @@ import pandas as pd
 import openpyxl as pyxl
 import numpy as np
 
+import dbconnect as db
+
 years_included = ['16']
 newStats = 'NewStats'
+
 
 def getdataframefromfile(fileTitle):
     filepath = 'data/spreadsheets/' + fileTitle + '.xlsx'
@@ -23,10 +26,12 @@ def getdataframefromfile(fileTitle):
     data = pd.read_excel(filepath)
     return data
 
+
 def as_text(value):
     if value is None:
         return ""
     return str(value)
+
 
 def preCreateStatsSheet(sheetname, filepath): #realized
     wb = pyxl.load_workbook(filepath)
@@ -36,6 +41,7 @@ def preCreateStatsSheet(sheetname, filepath): #realized
     statsSheet.append(["Имя", "Победы", "Ничьи", "Поражения", "Всего Игр", "Коэффициент побед", "Коэффициент очков"])
 
     wb.save(filename=filepath)
+
 
 def findActiveSheets(filepath):
     wb = pyxl.load_workbook(filepath, data_only=True)
@@ -54,6 +60,7 @@ def findActiveSheets(filepath):
 
     return activeSheets
 
+
 def isYearOK(year):
     if (years_included == None):
         raise 'No selected years Error'
@@ -63,6 +70,7 @@ def isYearOK(year):
             return True
 
     return False
+
 
 def getColumnNamesRange(currentSheet, filepath):
     wb = pyxl.load_workbook(filepath, data_only=True)
@@ -239,6 +247,7 @@ def getColumnNamesRange(currentSheet, filepath):
                 valuelist = []
     return rangestats
 
+
 def analyzePersons(persons, filePath):
     # Open file
     wb = pyxl.load_workbook(filePath)
@@ -291,3 +300,11 @@ def analyzePersons(persons, filePath):
         k += 1
 
     wb.save(filename=filePath)
+
+
+def testdb():
+    c, conn = db.connection()
+    c.execute('SELECT * FROM Players ORDER BY PlayerID')
+    data = c.fetchall()
+    dataframe = pd.DataFrame(list(data), columns=['ID', 'Имя игрока'])
+    return dataframe
