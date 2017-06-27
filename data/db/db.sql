@@ -49,4 +49,5 @@ FROM MappingPlayersSoccerGames MPSG
 JOIN Players P
 ON MPSG.PlayerID = P.PlayerID
 JOIN SoccerGames SG
-ON MPSG.SoccerGameID = SG.SoccerGameID;
+ON MPSG.SoccerGameID = SG.SoccerGameID
+ORDER BY SoccerGameDate;
