@@ -1,11 +1,8 @@
-from flask import Flask, render_template, redirect
-import spreadsheet as ss
+from flask import Flask, render_template, redirect, request
 import spreadsheetdriveapi as drive
-import DataHandler as dh
 
-from nocache import nocache
-
-# import pandas as pd
+import DBDataReader as dbr
+import dbDataWriter as dbw
 
 app = Flask(__name__)
 
@@ -13,37 +10,33 @@ dataSheet = None
 data = None
 
 
-@app.route("/testdb")
-def testdatabase():
-    dataDB = dh.testdb()
-    # return str(data)
-    return render_template('table.html', tables=[dataDB.to_html()], titles=[])
+@app.route("/stats")
+def get_stats_for_current_year():
+    dataDB = dbr.get_stats(None, None)
+    return render_template('table.html', tables=[dataDB.to_html()])
+
+
+@app.route('/stats', methods=['POST'])
+def get_stats_for_selected_period():
+    print('POST METHOD')
+    start = request.form['start']
+    end = request.form['end']
+
+    dataDB = dbr.get_stats(start, end)
+    return render_template('table.html', tables=[dataDB.to_html()], startdate=start, enddate=end)
+
 
 @app.route("/update")
-def gettables():
+def get_spread_s():
     global data, dataSheet
-    data = dh.getdataframefromfile(dataSheet)
-    # data = pd.read_excel(filepath)
-    # return render_template('table.html', tables=[data.to_html()], titles=[])
-    return redirect("../")
-
-
-@app.route("/table")
-def viewstats():
-    global data
-    # data = dh.getdataframefromfile(dataSheet)
-    # data = pd.read_excel(filepath)
-    return render_template('table.html', tables=[data.to_html()], titles=[])
-
-
-@app.route("/test")
-def spreadsheet():
-    return ss.getStatsArray()
+    dataSheet = drive.downloadxlsx('football')
+    data = dbw.getPlayersStats('data/spreadsheets/football.xlsx')
+    return redirect("/")
 
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    return redirect("/stats")
 
 if __name__ == '__main__':
     dataSheet = drive.downloadxlsx('football')

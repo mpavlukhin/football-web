@@ -3,6 +3,7 @@ from pydrive.drive import GoogleDrive
 
 
 def downloadxlsx(fileTitle):
+    # create method for auth!!!
     gauth = GoogleAuth()
     gauth.LocalWebserverAuth() # Creates local webserver and auto handles authentication.
 
@@ -28,6 +29,8 @@ def downloadxlsx(fileTitle):
     if not fileTitle:
         fileTitle = input('Input spreadsheet name which you want to download: ')
     donwloadornot = False
+
+    # USELESS COND
     for file1 in file_list:
         download_mimetype = None
         if file1['mimeType'] in mimetypes:

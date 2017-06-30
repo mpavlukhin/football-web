@@ -12,17 +12,29 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='table.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='index.css') }}"/>
 
+    <script src="{{ url_for('static', filename='calendar.js') }}" type="text/javascript"></script>
 </head>
 
 <body>
-    <nav class="navbar navbar-default" align="center" style="width:100%;position:fixed">
-          <a class="navbar-brand" style="float:none; font-size: 100px" href="../">Football Web Service</a>
+    <nav class="navbar navbar-default" align="center" style="position:fixed; z-index:4; width: 100%; border-bottom: solid #dedede;">
+          <a class="navbar-brand" style="float:none; font-size: 100px;" href="../">Football Web Service</a>
     </nav>
 
-    <div align="center" style="padding-top: 120px">
-      {% for table in tables %}
-        <h2>{{titles[loop.index]}}</h2>
-        {{ table|safe }}
-      {% endfor %}
+    <div align="center" style="padding-top: 150px">
+            <form method="post" >
+                <div class="input-group">
+                <input type="text" name="start" value="" onfocus="this.select();lcs(this)"
+                onclick="event.cancelBubble=true;this.select();lcs(this)" class="form-control" style="height: 40px; width: 200px; font-size: 30px">
+                <input type="text" name="end" value="" onfocus="this.select();lcs(this)"
+                onclick="event.cancelBubble=true;this.select();lcs(this)" class="form-control" style="height: 40px; width: 200px; font-size: 30px; margin-left: 100px">
+                </div>
+                <input type="submit" value="Filter" class="btn btn-primary btn-group-web" style="height: 50px; width: 320px; margin-top: 20px">
+            </form>
+    </div>
+
+    <div align="center" style="padding-top: 20px">
+        {% for table in tables %}
+            {{ table|safe }}
+        {% endfor %}
     </div>
 </body>

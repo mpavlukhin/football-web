@@ -1,4 +1,4 @@
-table           { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size: 18px}
+table.dataframe { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size: 18px; width: 60%;}
 
 table.dataframe, .dataframe th, .dataframe td {
   border: none;
@@ -20,7 +20,7 @@ table.dataframe, .dataframe th, .dataframe td {
     font-size: 17px
 }
 
-tr:nth-child(odd)		{ background-color:#eee; }
-tr:nth-child(even)	{ background-color:#fff; }
+.dataframe tr:nth-child(odd)		{ background-color:#eee; }
+.dataframe tr:nth-child(even)	{ background-color:#fff; }
 
-tr:hover            { background-color: #ffff99;}
+.dataframe tr:hover            { background-color: #ffff99;}
