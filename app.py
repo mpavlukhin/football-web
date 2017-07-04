@@ -4,6 +4,8 @@ import spreadsheetdriveapi as drive
 import DBDataReader as dbr
 import dbDataWriter as dbw
 
+import datetime as dt
+
 app = Flask(__name__)
 
 dataSheet = None
@@ -12,18 +14,23 @@ data = None
 
 @app.route("/stats")
 def get_stats_for_current_year():
+    now = dt.datetime.now()
+    years = list(range(2011, now.year + 1))
+
     dataDB = dbr.get_stats(None, None)
-    return render_template('table.html', tables=[dataDB.to_html()])
+    return render_template('table.html', table=dataDB.to_html(), years=years)
 
 
 @app.route('/stats', methods=['POST'])
 def get_stats_for_selected_period():
-    print('POST METHOD')
     start = request.form['start']
     end = request.form['end']
 
+    now = dt.datetime.now()
+    years = list(range(2011, now.year + 1))
+
     dataDB = dbr.get_stats(start, end)
-    return render_template('table.html', tables=[dataDB.to_html()], startdate=start, enddate=end)
+    return render_template('table.html', table=dataDB.to_html(), years=years)
 
 
 @app.route("/update")

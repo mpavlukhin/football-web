@@ -1,26 +1,53 @@
-table.dataframe { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size: 18px; width: 60%;}
+table.dataframe {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 18px;
+    width: 100%;
+}
 
 table.dataframe, .dataframe th, .dataframe td {
-  border: none;
-  border-bottom: 1px solid #C8C8C8;
-  border-collapse: collapse;
-  text-align: center;
-  padding: 10px;
-  margin-bottom: 40px;
-  font-size: 0.9em;
+    border: none;
+    border-bottom: 1px solid #C8C8C8;
+    border-collapse: collapse;
+    text-align: center;
+    padding: 2px;
+    font-size: 14px;
 }
 
 .dataframe th {
     background-color: #327dff;
     color: white;
-    font-size: 20px;
 }
 
-.dataframe tr {
-    font-size: 17px
+.dataframe tr:nth-child(odd)    { background-color:#eee; }
+.dataframe tr:nth-child(even)   { background-color:#fff; }
+
+.dataframe tr:hover             { background-color: #ffff99;}
+
+.container {
+    margin: auto;
+    width: 100%;
+    padding-top:100px
 }
 
-.dataframe tr:nth-child(odd)		{ background-color:#eee; }
-.dataframe tr:nth-child(even)	{ background-color:#fff; }
+#football-brand {
+    text-align: center;
+    position: fixed;
+    z-index: 4;
+    height: 90px;
+    width: 100%;
+    border-bottom: solid #dedede;
+}
 
-.dataframe tr:hover            { background-color: #ffff99;}
+#football-brand-text {
+    font-weight: bold;
+    float: none;
+    font-size: 35px;
+    margin-bottom: 200px;
+}
+
+#submit {
+    height: 35px;
+    width: 220px;
+    font-size: 15px;
+    margin-top: 20px;
+}

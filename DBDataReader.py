@@ -1,10 +1,17 @@
 import dbconnect as db
 import pandas as pd
-import datetime
+import datetime as dt
+import calendar as cal
 
 
-def normalize_date_for_db(date):
-    date_day, date_month, date_year = date.split('-')
+def normalize_date_for_db(date, is_end_date=True):
+    date_month, date_year = date.split('/')
+
+    if(is_end_date):
+        date_day = str(cal.monthrange(int(date_year), int(date_month))[1])
+    else:
+        date_day = '01'
+
     normalized_date = date_year + date_month + date_day
 
     return normalized_date
@@ -17,12 +24,14 @@ def get_stats(start_date, end_date):
     c.execute(cmd_drop_view)
 
     if start_date is None and end_date is None:
-        now = datetime.datetime.now()
-        start_date = '01-01-{:d}'.format(now.year)
-        end_date = '31-12-{:d}'.format(now.year)
+        now = dt.datetime.now()
+        start_date = '01/{:d}'.format(now.year)
+        end_date = '12/{:d}'.format(now.year)
 
-    normalized_start_date_for_db = normalize_date_for_db(start_date)
+    normalized_start_date_for_db = normalize_date_for_db(start_date, False)
     normalized_end_date_for_db = normalize_date_for_db(end_date)
+
+    print(normalized_start_date_for_db + ' ' + normalized_end_date_for_db)
 
     cmd_create_date_sort_view = 'CREATE VIEW MPSG AS SELECT PlayerID, Points, GameStatus, SoccerGameDate ' \
                                 'FROM MappingPlayersSoccerGames MPSG ' \
