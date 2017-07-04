@@ -40,6 +40,7 @@ def get_spread_s():
     data = dbw.updatePlayersStats('data/spreadsheets/football.xlsx')
     return redirect("/")
 
+
 @app.route("/create")
 def get_spread():
     global data, dataSheet

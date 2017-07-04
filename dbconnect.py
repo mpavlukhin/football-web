@@ -11,12 +11,13 @@ def connection():
 
     return c, conn
 
+
 def recreateDB():
     c, conn = connection()
     c.execute("DROP DATABASE IF EXISTS Football")
     c.execute("CREATE DATABASE Football")
     c.execute("USE Football")
-    c.execute("CREATE TABLE `Players` (	`PlayerID` int NOT NULL AUTO_INCREMENT,	`PlayerName` varchar(20) NOT NULL UNIQUE,	PRIMARY KEY (`PlayerID`));")
+    c.execute("CREATE TABLE `Players` (	`PlayerID` int NOT NULL AUTO_INCREMENT,	`PlayerName` varchar(20) NOT NULL UNIQUE,PRIMARY KEY (`PlayerID`));")
     c.execute("CREATE TABLE `SoccerGames` ("
 	"`SoccerGameID` int NOT NULL AUTO_INCREMENT,"
 	"`SoccerGameDate` DATE NOT NULL UNIQUE,"
