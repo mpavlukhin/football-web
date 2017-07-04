@@ -268,5 +268,3 @@ def updatePlayersStats(filepath):
             print(sheet.title + " Complete!")
             break
 
-
-updatePlayersStats("data/spreadsheets/football.xlsx")

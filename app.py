@@ -34,7 +34,7 @@ def get_spread_s():
     return redirect("/")
 
 @app.route("/create")
-def get_spread_s():
+def get_spread():
     global data, dataSheet
     dataSheet = drive.downloadxlsx('football')
     data = dbw.getAllPlayersStats('data/spreadsheets/football.xlsx')
