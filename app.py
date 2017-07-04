@@ -30,7 +30,14 @@ def get_stats_for_selected_period():
 def get_spread_s():
     global data, dataSheet
     dataSheet = drive.downloadxlsx('football')
-    data = dbw.getPlayersStats('data/spreadsheets/football.xlsx')
+    data = dbw.updatePlayersStats('data/spreadsheets/football.xlsx')
+    return redirect("/")
+
+@app.route("/create")
+def get_spread_s():
+    global data, dataSheet
+    dataSheet = drive.downloadxlsx('football')
+    data = dbw.getAllPlayersStats('data/spreadsheets/football.xlsx')
     return redirect("/")
 
 

@@ -235,7 +235,7 @@ class ParserSecondRange(ParserMain):
 
 
 
-def getPlayersStats(filepath):
+def getAllPlayersStats(filepath):
     db.recreateDB()
     P = ParserMain(filepath)
     P.getPlayersList()
@@ -254,3 +254,19 @@ def getPlayersStats(filepath):
                 Parser.run(sheet)
                 print(titledata + ' Complete!')
 
+
+
+# This function will get info only from last list
+def updatePlayersStats(filepath):
+    P = ParserMain(filepath)
+    P.getPlayersList()
+    for sheet in P.wb:
+        Parser = None
+        if ((len)(sheet.title) <= 4):
+            Parser = ParserFirstRange(filepath)
+            Parser.run(sheet)
+            print(sheet.title + " Complete!")
+            break
+
+
+updatePlayersStats("data/spreadsheets/football.xlsx")
