@@ -31,9 +31,6 @@ ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGame
 INSERT INTO Players (PlayerName) VALUES ('Кленов'), ('Игнатов'), ('Макс'), ('Глеб');
 INSERT INTO SoccerGames (SoccerGameDate) VALUES ('17-06-19'), ('17-06-22'), ('17-06-26'); -- YYYY-MM-DD
 
-INSERT INTO MappingPlayersSoccerGames VALUES (1, 1, 0, 'L'), (1, 2, 3, 'W'), (1, 3, 1, 'D'); -- for Кленов
-INSERT INTO MappingPlayersSoccerGames VALUES (4, 1, 1, 'L'), (4, 2, 3, 'W'), (4, 3, 1, 'D'); -- for Глеб
-
 -- Select data from tables
 SELECT * FROM Players
 ORDER BY PlayerID;
@@ -288,3 +285,12 @@ GROUP BY MPSG.PlayerID
 
 -- HAVING SG.SoccerGameDate > CONVERT('2014-06-24', DATE)
 ;
+
+SELECT * FROM Players;
+
+SELECT PlayerID, Points, GameStatus, SG.SoccerGameDate FROM MappingPlayersSoccerGames MSG
+JOIN SoccerGames SG
+ON MSG.SoccerGameID = SG.SoccerGameID
+WHERE PlayerID = 1 and SoccerGameDate <= '15-01-01' and SoccerGameDate >= '14-01-01'
+ORDER BY PlayerID;
+

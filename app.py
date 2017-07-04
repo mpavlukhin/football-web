@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, request
 import spreadsheetdriveapi as drive
 
 import DBDataReader as dbr
-import dbDataWriter as dbw
+import dbDataWriterOOP as dbw
 
 import datetime as dt
 
@@ -37,7 +37,14 @@ def get_stats_for_selected_period():
 def get_spread_s():
     global data, dataSheet
     dataSheet = drive.downloadxlsx('football')
-    data = dbw.getPlayersStats('data/spreadsheets/football.xlsx')
+    data = dbw.updatePlayersStats('data/spreadsheets/football.xlsx')
+    return redirect("/")
+
+@app.route("/create")
+def get_spread():
+    global data, dataSheet
+    dataSheet = drive.downloadxlsx('football')
+    data = dbw.getAllPlayersStats('data/spreadsheets/football.xlsx')
     return redirect("/")
 
 
