@@ -2,7 +2,8 @@ import dbconnect as db
 import pandas as pd
 import datetime as dt
 import calendar as cal
-
+from operator import itemgetter
+import itertools
 
 def normalize_date_for_db(date, is_end_date=True):
     date_month, date_year = date.split('/')
@@ -47,7 +48,7 @@ def get_stats(start_date, end_date):
                     'IFNULL(LOSES.Loses, 0) AS \'Loses\', ' \
                     'COUNT(GameStatus) AS \'Total Games\', ' \
                     'CONCAT(CAST(AVG(GameStatus = \'W\') * 100 AS DECIMAL(5, 2)), \'%\') AS \'Victory Rate\', ' \
-                    'CONCAT(CAST((SUM(Points) / (COUNT(Points) * 3)) * 100 AS DECIMAL(5, 2)), \'%\') ' \
+                    'CAST((SUM(Points) / (COUNT(Points) * 3)) * 100 AS DECIMAL(5, 2)) ' \
                     'AS \'Score Rate\' ' \
                     'FROM MPSG ' \
                     'JOIN Players P ' \
@@ -66,6 +67,34 @@ def get_stats(start_date, end_date):
     c.execute(cmd_get_stats)
     columns_names = [i[0] for i in c.description]
     players_stats = c.fetchall()
+    players_stats = list(players_stats)
+    players_stats_lists = [[]]
+    players_with_less_ten_games = [[]]
+    for player in players_stats:
+        if (int)(player[4]) >= 10:
+            players_stats_lists.append(player)
+        else:
+            players_with_less_ten_games.append(player)
+    players_stats_lists.pop(0)
+    players_with_less_ten_games.pop(0)
+    players_stats_lists.sort(key=lambda tup:tup[6], reverse=True)
+    players_with_less_ten_games.sort(key=lambda tup: tup[6], reverse=True)
 
-    dataframe = pd.DataFrame(list(players_stats), columns=columns_names)
+    maxlen = len(players_stats_lists)
+    index = maxlen
+    for player in players_with_less_ten_games:
+        players_stats_lists.append(player)
+
+    index = 0
+
+    for player in players_stats_lists:
+        tempstr = (list)(player)
+        tempstr[6] = (str)(player[6]) + '%'
+        players_stats_lists.remove(player)
+        players_stats_lists.insert(index,tempstr)
+        index += 1
+    dataframe = pd.DataFrame(players_stats_lists, columns=columns_names)
     return dataframe
+
+
+get_stats('01/17', '12/17')

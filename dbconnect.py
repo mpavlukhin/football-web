@@ -23,13 +23,32 @@ def recreateDB():
 	"`SoccerGameDate` DATE NOT NULL UNIQUE,"
 	"PRIMARY KEY (`SoccerGameID`)"
     ");")
+
     c.execute("CREATE TABLE `MappingPlayersSoccerGames` ("
 	"`PlayerID` int NOT NULL,"
 	"`SoccerGameID` int NOT NULL,"
 	"`Points` int NOT NULL,"
     "`GameStatus` char(1) NOT NULL"
     ");")
+
+    c.execute("CREATE TABLE `WebServiceUsers` ("
+	"`Username` varchar(20) NOT NULL UNIQUE,"
+	"`Password` varchar(20) NOT NULL"
+    ");")
+
     c.execute("ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_PlayerID` FOREIGN KEY (`PlayerID`) REFERENCES `Players`(`PlayerID`);")
     c.execute("ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_SoccerGameID` FOREIGN KEY (`SoccerGameID`) REFERENCES `SoccerGames`(`SoccerGameID`);")
     conn.autocommit("Recreating DB")
     print("Database successfully recreated!")
+
+
+def getWebServiceUsers():
+    c, conn = connection()
+    list = [[]]
+    c.execute("SELECT * FROM WebServiceUsers")
+    for (user, password) in c:
+        list.append([user, password])
+    list.pop(0)
+    return list
+
+

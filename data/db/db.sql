@@ -24,6 +24,11 @@ CREATE TABLE `MappingPlayersSoccerGames` (
     `GameStatus` char(1) NOT NULL
 );
 
+CREATE TABLE `WebServiceUsers` (
+	`Username` varchar(20) NOT NULL UNIQUE,
+	`Password` varchar(20) NOT NULL,
+);
+
 ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_PlayerID` FOREIGN KEY (`PlayerID`) REFERENCES `Players`(`PlayerID`);
 ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_SoccerGameID` FOREIGN KEY (`SoccerGameID`) REFERENCES `SoccerGames`(`SoccerGameID`);
 
