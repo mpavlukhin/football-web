@@ -30,7 +30,7 @@ def get_stats_for_selected_period():
     years = list(range(2011, now.year + 1))
 
     dataDB = dbr.get_stats(start, end)
-    return render_template('table.html', table=dataDB.to_html(), years=years)
+    return render_template('table.html', table=dataDB.to_html(), years=years, start=start, end=end)
 
 
 @app.route("/update")
