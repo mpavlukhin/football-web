@@ -43,21 +43,31 @@
                         {% for year in years %}
                         <optgroup label={{ year }}>
                             {% for month in range(1, 13) %}
-                            <option>{{ "{:02d}".format(month) }}/{{ year }}</option>
+                                {% set date = "{:02d}".format(month) + "/" + year|string() %}
+                                {% if date == start %}
+                                    <option selected="selected"> {{ date }} </option>
+                                {% else %}
+                                    <option> {{ date }} </option>
+                                {% endif %}
                             {% endfor %}
                         </optgroup>
                         {% endfor %}
                     </select>
 
                     <h3>End date:</h3>
-                    <select class="selectpicker" data-style="btn-info" data-size="5" data-live-search="true" name="end">
+                    <select class="selectpicker" data-style="btn-primary" data-size="5" data-live-search="true" name="end">
                         {{ years.reverse() }}
                         {% for year in years %}
-                            <optgroup label={{ year }}>
-                                {% for month in range(1, 13) %}
-                                <option>{{ "{:02d}".format(month) }}/{{ year }}</option>
-                                {% endfor %}
-                            </optgroup>
+                        <optgroup label={{ year }}>
+                            {% for month in range(12, 0, -1) %}
+                                {% set date = "{:02d}".format(month) + "/" + year|string() %}
+                                {% if date == end %}
+                                    <option selected="selected"> {{ date }} </option>
+                                {% else %}
+                                    <option> {{ date }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
                         {% endfor %}
                     </select>
 
