@@ -2,8 +2,7 @@ import dbconnect as db
 import pandas as pd
 import datetime as dt
 import calendar as cal
-from operator import itemgetter
-import itertools
+import numpy as np
 
 def normalize_date_for_db(date, is_end_date=True):
     date_month, date_year = date.split('/')
@@ -31,8 +30,6 @@ def get_stats(start_date, end_date):
 
     normalized_start_date_for_db = normalize_date_for_db(start_date, False)
     normalized_end_date_for_db = normalize_date_for_db(end_date)
-
-    print(normalized_start_date_for_db + ' ' + normalized_end_date_for_db)
 
     cmd_create_date_sort_view = 'CREATE VIEW MPSG AS SELECT PlayerID, Points, GameStatus, SoccerGameDate ' \
                                 'FROM MappingPlayersSoccerGames MPSG ' \
@@ -78,6 +75,7 @@ def get_stats(start_date, end_date):
     players_stats_lists.pop(0)
     players_with_less_ten_games.pop(0)
     players_stats_lists.sort(key=lambda tup:tup[6], reverse=True)
+    last_player_before_losers = len(players_stats_lists) - 1
     players_with_less_ten_games.sort(key=lambda tup: tup[6], reverse=True)
 
     maxlen = len(players_stats_lists)
@@ -93,8 +91,7 @@ def get_stats(start_date, end_date):
         players_stats_lists.remove(player)
         players_stats_lists.insert(index,tempstr)
         index += 1
+
     dataframe = pd.DataFrame(players_stats_lists, columns=columns_names)
-    return dataframe
-
-
-get_stats('01/17', '12/17')
+    dataframe.index = np.arange(1, len(dataframe) + 1)
+    return dataframe, last_player_before_losers
