@@ -33,9 +33,6 @@ ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGame
 ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_SoccerGameID` FOREIGN KEY (`SoccerGameID`) REFERENCES `SoccerGames`(`SoccerGameID`);
 
 -- Insert data into tables
-INSERT INTO Players (PlayerName) VALUES ('Кленов'), ('Игнатов'), ('Макс'), ('Глеб');
-INSERT INTO SoccerGames (SoccerGameDate) VALUES ('17-06-19'), ('17-06-22'), ('17-06-26'); -- YYYY-MM-DD
-
 -- Select data from tables
 SELECT * FROM Players
 ORDER BY PlayerID;
@@ -46,10 +43,7 @@ ORDER BY SoccerGameDate;
 SELECT * FROM MappingPlayersSoccerGames;
 
 -- Insert test data
-INSERT INTO SoccerGames (SoccerGameDate) VALUES ('14-06-19'), ('15-06-22'), ('16-06-26'), ('14-06-11'); -- YYYY-MM-DD
 
-INSERT INTO MappingPlayersSoccerGames VALUES (1, 4, 1, 'L'), (1, 5, 1, 'D'), (1, 6, 3, 'W'), (1, 7, 3, 'W'); -- for Кленов
-INSERT INTO MappingPlayersSoccerGames VALUES (4, 4, 3, 'W'), (4, 5, 1, 'W'), (4, 6, 0, 'L'); -- for Глеб
 
 -- 1) select year, day month
 SELECT MPSG.PlayerID, P.PlayerName,
@@ -291,11 +285,4 @@ GROUP BY MPSG.PlayerID
 -- HAVING SG.SoccerGameDate > CONVERT('2014-06-24', DATE)
 ;
 
-SELECT * FROM Players;
-
-SELECT PlayerID, Points, GameStatus, SG.SoccerGameDate FROM MappingPlayersSoccerGames MSG
-JOIN SoccerGames SG
-ON MSG.SoccerGameID = SG.SoccerGameID
-WHERE PlayerID = 1 and SoccerGameDate <= '15-01-01' and SoccerGameDate >= '14-01-01'
-ORDER BY PlayerID;
 
