@@ -28,21 +28,16 @@ def downloadxlsx(fileTitle):
 
     if not fileTitle:
         fileTitle = input('Input spreadsheet name which you want to download: ')
-    donwloadornot = False
 
-    # USELESS COND
     for file1 in file_list:
-        download_mimetype = None
         if file1['mimeType'] in mimetypes:
             download_mimetype = mimetypes[file1['mimeType']]
             if file1['mimeType'] in mimetypes and file1['title'] == fileTitle:
                 file1.GetContentFile('data/spreadsheets/' + fileTitle + '.xlsx', mimetype=download_mimetype)
-                print('Successfully downloaded')
-                donwloadornot = True
+                print('Successfully downloaded ' + fileTitle)
                 return fileTitle
-                break
-    if donwloadornot == False:
-        print('Error, wrong name')
+
+    print('Error, wrong name')
 
 
 

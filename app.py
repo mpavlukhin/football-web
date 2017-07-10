@@ -17,6 +17,7 @@ def get_stats_for_current_year():
     now = dt.datetime.now()
     years = list(range(2011, now.year + 1))
 
+
     dataDB, last_player_before_losers = dbr.get_stats(None, None)
 
     now = dt.datetime.now()
@@ -42,16 +43,16 @@ def get_stats_for_selected_period():
 @app.route("/update")
 def get_spread_s():
     global data, dataSheet
-    dataSheet = drive.downloadxlsx('football')
-    data = dbw.updatePlayersStats('data/spreadsheets/football.xlsx')
+    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+    data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
     return redirect("/")
 
 
 @app.route("/create")
 def get_spread():
     global data, dataSheet
-    dataSheet = drive.downloadxlsx('football')
-    data = dbw.getAllPlayersStats('data/spreadsheets/football.xlsx')
+    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+    data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
     return redirect("/")
 
 
@@ -60,6 +61,6 @@ def index():
     return redirect("/stats")
 
 if __name__ == '__main__':
-    dataSheet = drive.downloadxlsx('football')
-    app.run(host='0.0.0.0', port=80)
+    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+    app.run()
     redirect("../")

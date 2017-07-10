@@ -145,6 +145,10 @@ class ParserMain():
                         playerscore
                         , playerresult))
                 CONNECTION.autocommit("Inserting to MappingPlayers")
+                print("INSERTED VALUES( {0}, {1}, {2}, '{3}')".format(
+                    playercell.value, datecell.value,
+                        playerscore
+                        , playerresult))
                 index += 1
     #         Making INSERT for DB
             index = 0
@@ -184,6 +188,22 @@ class ParserFirstRange(ParserMain):
         return scorelist
 
 
+    def deletelastlistfromDB(self, sheet):
+        titledata = sheet.title
+        titleyear = (str)(titledata[-2:])
+        titlemonth = (str)(titledata.replace(' ', '')[:-2])
+        datesrc = titleyear + '-' + titlemonth + '-' + '01'
+        normal_date = datetime.strptime(datesrc, "%y-%m-%d").date()
+        print(normal_date)
+        CURSOR.execute("SELECT SoccerGameID FROM SoccerGames WHERE SoccerGameDate >= '{0}';".format(normal_date))
+        print(normal_date)
+        indexlist = CURSOR.fetchall()
+        print(indexlist)
+        CONNECTION.autocommit('Get all indexes')
+        for index in indexlist:
+            print(index[0])
+            CURSOR.execute("DELETE FROM MappingPlayersSoccerGames WHERE SoccerGameID = {0}".format((int)(index[0])))
+        CONNECTION.autocommit('Delete ofrom MPSG one row')
 
 
     def run(self, sheet):
@@ -235,6 +255,8 @@ class ParserSecondRange(ParserMain):
 
 
 
+
+
 def getAllPlayersStats(filepath):
     db.recreateDB()
     P = ParserMain(filepath)
@@ -263,8 +285,9 @@ def updatePlayersStats(filepath):
     for sheet in P.wb:
         Parser = None
         if ((len)(sheet.title) <= 4):
+
             Parser = ParserFirstRange(filepath)
+            Parser.deletelastlistfromDB(sheet)
             Parser.run(sheet)
             print(sheet.title + " Complete!")
             break
-
