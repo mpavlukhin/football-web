@@ -123,7 +123,7 @@ class ParserMain():
                             playerscore = 2
                             playerresult = 'D'
                         else:
-                            playerscore = 1
+                            playerscore = 0
                             playerresult = 'L'
                     # 3 Case   # For example Game W - D - D (3 - 1 - 1)
                     elif (team1score > team2score and team2score == team3score):

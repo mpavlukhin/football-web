@@ -62,5 +62,5 @@ def index():
 
 if __name__ == '__main__':
     dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    app.run()
+    app.run(host='0.0.0.0', port=80)
     redirect("../")
