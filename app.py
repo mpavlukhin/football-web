@@ -25,7 +25,7 @@ def get_stats_for_current_year():
     now = dt.datetime.now()
     start_date = '01/{:d}'.format(now.year)
     end_date = '12/{:d}'.format(now.year)
-    return render_template('table.html', table=dataDB.to_html(), years=years, start=start_date, end=end_date,
+    return render_template('table.html', table=dataDB.to_html(), classes='tablesorter', years=years, start=start_date, end=end_date,
                            last_player_before_losers=last_player_before_losers)
 
 
@@ -85,5 +85,5 @@ def index():
 
 if __name__ == '__main__':
     dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    app.run()
+    app.run(host='0.0.0.0', port=80)
     redirect("../")
