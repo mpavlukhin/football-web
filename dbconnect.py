@@ -51,4 +51,3 @@ def getWebServiceUsers():
     list.pop(0)
     return list
 
-

@@ -6,6 +6,8 @@ import dbDataWriter as dbw
 
 import datetime as dt
 
+import dbconnect as db
+
 app = Flask(__name__)
 
 dataSheet = None
@@ -42,18 +44,39 @@ def get_stats_for_selected_period():
 
 @app.route("/update")
 def get_spread_s():
-    global data, dataSheet
-    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-    return redirect("/")
+    return render_template('auth.html')
 
+@app.route("/update", methods=['POST'])
+def get_login_info_update():
+    global data, dataSheet
+    login = request.form['login']
+    password = request.form['password']
+    userlists = db.getWebServiceUsers()
+    for user in userlists:
+        if login == user[0] and password == user[1]:
+            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+            data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+            return redirect("/stats")
+    msg = 'Wrong login or password'
+    return  render_template('auth.html', message=msg)
 
 @app.route("/create")
-def get_spread():
+def login_in():
+    return render_template('auth.html')
+
+@app.route("/create", methods=['POST'])
+def get_login_info():
     global data, dataSheet
-    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-    return redirect("/")
+    login = request.form['login']
+    password = request.form['password']
+    userlists = db.getWebServiceUsers()
+    for user in userlists:
+        if login == user[0] and password == user[1]:
+            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+            data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+            return redirect("/stats")
+    msg = 'Wrong login or password'
+    return  render_template('auth.html', message=msg)
 
 
 @app.route("/")
@@ -62,5 +85,5 @@ def index():
 
 if __name__ == '__main__':
     dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    app.run(host='0.0.0.0', port=80)
+    app.run()
     redirect("../")
