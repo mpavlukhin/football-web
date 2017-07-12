@@ -35,7 +35,8 @@ def downloadxlsx(fileTitle):
             if file1['mimeType'] in mimetypes and file1['title'] == fileTitle:
                 file1.GetContentFile('data/spreadsheets/' + fileTitle + '.xlsx', mimetype=download_mimetype)
                 print('Successfully downloaded ' + fileTitle)
-                return fileTitle
+                fileLink = file1['alternateLink']
+                return fileTitle, fileLink
 
     print('Error, wrong name')
 

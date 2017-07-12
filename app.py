@@ -15,7 +15,7 @@ app = Flask(__name__)
 dataSheet = None
 data = None
 
-
+FILELINK = ''
 @app.route("/stats")
 def get_stats_for_current_year():
     now = dt.datetime.now()
@@ -32,7 +32,7 @@ def get_stats_for_current_year():
     table_html = re.sub('dataframe ', '', table_html)
 
     return render_template('table.html', table=table_html, years=years, start=start_date, end=end_date,
-                           last_player_before_losers=last_player_before_losers,)
+                           last_player_before_losers=last_player_before_losers, source_file=FILELINK)
 
 
 @app.route('/stats', methods=['POST'])
@@ -48,7 +48,7 @@ def get_stats_for_selected_period():
     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
     table_html = re.sub('dataframe ', '', table_html)
     return render_template('table.html', table=table_html, years=years, start=start, end=end,
-                           last_player_before_losers=last_player_before_losers)
+                           last_player_before_losers=last_player_before_losers, source_file=FILELINK)
 
 
 @app.route("/update")
@@ -96,6 +96,6 @@ def index():
     return redirect("/stats")
 
 if __name__ == '__main__':
-    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+    dataSheet, FILELINK = drive.downloadxlsx('Football-bigdata-v0.2')
     app.run(host='0.0.0.0', port=5000)
     redirect("../")
