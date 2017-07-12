@@ -203,7 +203,6 @@ class ParserFirstRange(ParserMain):
                              self.getGamesScores(sheet))
 
 
-
 class ParserSecondRange(ParserMain):
 
     def getGamesDates(self, sheet):
@@ -242,9 +241,6 @@ class ParserSecondRange(ParserMain):
                              self.getGamesScores(sheet))
 
 
-
-
-
 def getAllPlayersStats(filepath):
     db.recreateDB()
     P = ParserMain(filepath)
@@ -262,7 +258,6 @@ def getAllPlayersStats(filepath):
                 Parser = ParserSecondRange(filepath)
                 Parser.run(sheet)
                 print(titledata + ' Complete!')
-
 
 
 # This function will get info only from last list
