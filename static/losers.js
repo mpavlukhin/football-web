@@ -1,6 +1,5 @@
 function addBorderBottom(row) {
-    var tables = document.getElementsByClassName("dataframe");
-    var table = tables[0];
+    var table = document.getElementById('statistics');
 
     var body = table.tBodies[0];
     var trs = body.getElementsByTagName("tr");

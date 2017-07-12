@@ -6,6 +6,8 @@ import dbDataWriter as dbw
 
 import datetime as dt
 
+import re
+
 app = Flask(__name__)
 
 dataSheet = None
@@ -23,8 +25,12 @@ def get_stats_for_current_year():
     now = dt.datetime.now()
     start_date = '01/{:d}'.format(now.year)
     end_date = '12/{:d}'.format(now.year)
-    return render_template('table.html', table=dataDB.to_html(), classes='tablesorter', years=years, start=start_date, end=end_date,
-                           last_player_before_losers=last_player_before_losers)
+
+    table_html = dataDB.to_html(classes='tablesorter" id="statistics')
+    table_html = re.sub('dataframe ', '', table_html)
+
+    return render_template('table.html', table=table_html, years=years, start=start_date, end=end_date,
+                           last_player_before_losers=last_player_before_losers,)
 
 
 @app.route('/stats', methods=['POST'])
@@ -36,7 +42,10 @@ def get_stats_for_selected_period():
     years = list(range(2011, now.year + 1))
 
     dataDB, last_player_before_losers = dbr.get_stats(start, end)
-    return render_template('table.html', table=dataDB.to_html(), years=years, start=start, end=end,
+
+    table_html = dataDB.to_html(classes='tablesorter" id="statistics')
+    table_html = re.sub('dataframe ', '', table_html)
+    return render_template('table.html', table=table_html, years=years, start=start, end=end,
                            last_player_before_losers=last_player_before_losers)
 
 
@@ -62,5 +71,5 @@ def index():
 
 if __name__ == '__main__':
     dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
     redirect("../")

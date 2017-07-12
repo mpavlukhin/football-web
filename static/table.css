@@ -1,10 +1,10 @@
-table.dataframe {
+table.tablesorter {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-size: 18px;
     width: 100%;
 }
 
-table.dataframe, .dataframe th, .dataframe td {
+table.tablesorter, .tablesorter th, .tablesorter td {
     border: none;
     border-bottom: 1px solid #C8C8C8;
     border-collapse: collapse;
@@ -13,20 +13,38 @@ table.dataframe, .dataframe th, .dataframe td {
     font-size: 14px;
 }
 
-.dataframe th {
+.tablesorter th {
+	cursor: pointer;
     background-color: #327dff;
     color: white;
 }
 
-.dataframe tr:nth-child(odd)    { background-color:#eee; }
-.dataframe tr:nth-child(even)   { background-color:#fff; }
+.tablesorter tr:nth-child(odd)    { background-color:#eee; }
+.tablesorter tr:nth-child(even)   { background-color:#fff; }
 
-.dataframe tr:hover             { background-color: #ffff99;}
+.tablesorter tr:hover             { background-color: #ffff99;}
 
 .container {
     margin: auto;
     width: 100%;
     padding-top:100px
+}
+
+table.tablesorter .header {
+	height: 30px;
+}
+
+table.tablesorter .headerSortUp {
+	background-image: url(asc.gif);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	background-color: #0151dc;
+}
+table.tablesorter .headerSortDown {
+	background-image: url(desc.gif);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	background-color: #0151dc;
 }
 
 #football-brand {

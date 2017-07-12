@@ -89,7 +89,7 @@ def get_stats(start_date, end_date):
         tempstr = (list)(player)
         tempstr[6] = (str)(player[6]) + '%'
         players_stats_lists.remove(player)
-        players_stats_lists.insert(index,tempstr)
+        players_stats_lists.insert(index, tempstr)
         index += 1
 
     dataframe = pd.DataFrame(players_stats_lists, columns=columns_names)
