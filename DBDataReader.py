@@ -39,14 +39,14 @@ def get_stats(start_date, end_date):
 
     c.execute(cmd_create_date_sort_view)
 
-    cmd_get_stats = 'SELECT PlayerName AS \'Name\', ' \
-                    'IFNULL(WINS.Wins, 0) AS \'Wins\', ' \
-                    'IFNULL(DRAWS.Draws, 0) AS \'Draws\', ' \
-                    'IFNULL(LOSES.Loses, 0) AS \'Loses\', ' \
-                    'COUNT(GameStatus) AS \'Total Games\', ' \
-                    'CONCAT(CAST(AVG(GameStatus = \'W\') * 100 AS DECIMAL(5, 2)), \'%\') AS \'Victory Rate\', ' \
+    cmd_get_stats = 'SELECT PlayerName AS \'Имя\', ' \
+                    'IFNULL(WINS.Wins, 0) AS \'Кол-во побед\', ' \
+                    'IFNULL(DRAWS.Draws, 0) AS \'Кол-во ничей\', ' \
+                    'IFNULL(LOSES.Loses, 0) AS \'Кол-во поражений\', ' \
+                    'COUNT(GameStatus) AS \'Общее кол-во игр\', ' \
+                    'CONCAT(CAST(AVG(GameStatus = \'W\') * 100 AS DECIMAL(5, 2)), \'%\') AS \'Коэф. побед\', ' \
                     'CAST((SUM(Points) / (COUNT(Points) * 3)) * 100 AS DECIMAL(5, 2)) ' \
-                    'AS \'Score Rate\' ' \
+                    'AS \'Коэф. очков\' ' \
                     'FROM MPSG ' \
                     'JOIN Players P ' \
                     'ON MPSG.PlayerID = P.PlayerID ' \
