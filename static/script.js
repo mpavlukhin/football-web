@@ -1,5 +1,5 @@
-$(document).ready(function()
-    {
-        $("#statistics").tablesorter();
-    }
-);
+$(function(){
+    $('table').tablesorter({
+        sortInitialOrder: "desc"
+    });
+});
