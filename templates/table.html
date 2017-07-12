@@ -1,7 +1,7 @@
 <!doctype html>
 <head>
     <meta charset="UTF-8">
-    <title>Football Web Service - Statistics</title>
+    <title>Футбольная статистика</title>
     <link rel="icon" type="image/ico" href="./static/favicon.ico" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
@@ -27,7 +27,7 @@
 
 <body>
     <nav class="navbar navbar-default" id="football-brand">
-          <a class="navbar-brand" id="football-brand-text" href="../">Football Web Service</a>
+          <a class="navbar-brand" id="football-brand-text" href="../">Футбольная статистика</a>
     </nav>
 
     <div class="container">
@@ -40,7 +40,7 @@
 
                 <form method="POST" align="center">
 
-                    <h3>Start date:</h3>
+                    <h3>Начало периода:</h3>
                     <select class="selectpicker" data-style="btn-info" data-size="5" data-live-search="true" name="start">
                         {% for year in years %}
                         <optgroup label={{ year }}>
@@ -56,7 +56,7 @@
                         {% endfor %}
                     </select>
 
-                    <h3>End date:</h3>
+                    <h3>Конец периода:</h3>
                     <select class="selectpicker" data-style="btn-primary" data-size="5" data-live-search="true" name="end">
                         {{ years.reverse() }}
                         {% for year in years %}
@@ -73,7 +73,7 @@
                         {% endfor %}
                     </select>
 
-                    <input type="submit" value="Filter" id="submit" class="btn btn-success btn-group-web">
+                    <input type="submit" value="Фильтровать" id="submit" class="btn btn-success btn-group-web">
                 </form>
             </div>
         </div>

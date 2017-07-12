@@ -8,6 +8,8 @@ import datetime as dt
 
 import re
 
+import dbconnect as db
+
 app = Flask(__name__)
 
 dataSheet = None
@@ -51,18 +53,42 @@ def get_stats_for_selected_period():
 
 @app.route("/update")
 def get_spread_s():
+    return render_template('auth.html')
+
+
+@app.route("/update", methods=['POST'])
+def get_login_info_update():
     global data, dataSheet
-    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-    return redirect("/")
+    login = request.form['login']
+    password = request.form['password']
+    userlists = db.getWebServiceUsers()
+    for user in userlists:
+        if login == user[0] and password == user[1]:
+            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+            data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+            return redirect("/stats")
+    msg = 'Wrong login or password'
+    return  render_template('auth.html', message=msg)
 
 
 @app.route("/create")
-def get_spread():
+def login_in():
+    return render_template('auth.html')
+
+
+@app.route("/create", methods=['POST'])
+def get_login_info():
     global data, dataSheet
-    dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-    data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-    return redirect("/")
+    login = request.form['login']
+    password = request.form['password']
+    userlists = db.getWebServiceUsers()
+    for user in userlists:
+        if login == user[0] and password == user[1]:
+            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
+            data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+            return redirect("/stats")
+    msg = 'Wrong login or password'
+    return  render_template('auth.html', message=msg)
 
 
 @app.route("/")
