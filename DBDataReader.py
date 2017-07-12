@@ -41,8 +41,8 @@ def get_stats(start_date, end_date):
 
     cmd_get_stats = 'SELECT PlayerName AS \'Имя\', ' \
                     'IFNULL(WINS.Wins, 0) AS \'Победы\', ' \
-                    'IFNULL(DRAWS.Draws, 0) AS \'Ничей\', ' \
-                    'IFNULL(LOSES.Loses, 0) AS \'Поражений\', ' \
+                    'IFNULL(DRAWS.Draws, 0) AS \'Ничьи\', ' \
+                    'IFNULL(LOSES.Loses, 0) AS \'Поражения\', ' \
                     'COUNT(GameStatus) AS \'Всего игр\', ' \
                     'CONCAT(CAST(AVG(GameStatus = \'W\') * 100 AS DECIMAL(5, 2)), \'%\') AS \'Коэф. побед\', ' \
                     'CAST((SUM(Points) / (COUNT(Points) * 3)) * 100 AS DECIMAL(5, 2)) ' \
