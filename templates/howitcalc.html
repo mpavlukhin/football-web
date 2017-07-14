@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/i18n/defaults-*.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/bootstrap-select.css">
+
+    <title>Расчет статистики</title>
+    <style>
+        p {
+        font-style: italic;
+         }
+        .main {
+        margin-left: 20px;
+        }
+    </style>
+</head>
+<body >
+<div class = "main">
+<h2>Расчет формы игрока</h2>
+</br>
+Берется 20 последних игр игрока за текущий и предыдуший год. После чего расчитывается коэффициент очков за эти 20 игр. Если кол-во игр меньше 20, то форма не расчитывается.
+<hr>
+<h2>Расчет рейтинга игрока</h2>
+<div style="width:50%" align="justify">
+</br>
+Рейтинг расчитывается за текущий год. Игры, которые были сыграны в текущем месяце, будут иметь больший коэффициент, нежели игры, которые были сыграны в предыдущих месяцах.
+Расчет происходит следующим образом:
+</br>
+Коэффициент равен единице, деленной на кол-во месяцев, включая текущий (если в этом месяце были игры). Текущий месяц будет иметь коэффициент 1, предыдущий месяц = порядковый номер месяца * коэффициент и т.д. После чего происходит расчет очков с учетом этих коэффициентов.
+<p> Пример: Сейчас месяц июль, делим 1 на 7(кол-во месяцев), и получаем  ~ 0.14. Соответственно месяца будут иметь следующие коэффициенты:</p>
+
+
+<table class = 'table'>
+    <th>Месяц</th>
+    <th>Коэффициент</th>
+  <tr>
+    <td>Июль</td>
+      <td>1</td>
+  </tr>
+      <tr>
+    <td>Июнь</td>
+      <td>0.86</td>
+  </tr>
+      <tr>
+    <td>Май</td>
+      <td>0.72</td>
+  </tr>
+      <tr>
+    <td>Апрель</td>
+      <td>0.58</td>
+  </tr>
+      <tr>
+    <td>Март</td>
+      <td>0.44</td>
+  </tr>
+      <tr>
+    <td>Февраль</td>
+      <td>0.3</td>
+  </tr>
+      <tr>
+    <td>Январь</td>
+      <td>0.16</td>
+  </tr>
+</table>
+    </div>
+
+Если игрок имеет 2 победы в июле и 2 победы в июне, то он будет иметь следующий рейтинг — (2 * 3 * 1) + (2 * 3 * 0.86) = 11.16
+</br>
+Если игрок имеет 2 ничьи в мае и 1 победу в апреле, то он будет иметь следующий рейтинг — (2 * 1 * 0,72) + (1 * 0.58) = 2.02
+</div>
+</body>
+</html>

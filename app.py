@@ -142,6 +142,10 @@ def get_player_stat():
     table_html = re.sub('dataframe ', '', table_html)
     return render_template('playerstat.html', table=table_html, player_name=player_name)
 
+
+@app.route("/howitcalc")
+def how_it_calc_page():
+    return render_template('howitcalc.html')
 @app.errorhandler(500)
 def page_not_found(e):
 
