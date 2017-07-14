@@ -39,7 +39,7 @@ def get_stats(start_date, end_date):
 
     c.execute(cmd_create_date_sort_view)
 
-    cmd_get_stats = 'SELECT PlayerName AS \'Имя\', ' \
+    cmd_get_stats = 'SELECT MPSG.PlayerID, PlayerName AS \'Имя\', ' \
                     'IFNULL(WINS.Wins, 0) AS \'Победы\', ' \
                     'IFNULL(DRAWS.Draws, 0) AS \'Ничьи\', ' \
                     'IFNULL(LOSES.Loses, 0) AS \'Поражения\', ' \
@@ -63,8 +63,17 @@ def get_stats(start_date, end_date):
 
     c.execute(cmd_get_stats)
     columns_names = [i[0] for i in c.description]
+    columns_names.append('Форма')
+    columns_names.append('Рейтинг')
+    del columns_names[0]
     players_stats = c.fetchall()
-    players_stats = list(players_stats)
+    players_stats = list(list(player_stats) for player_stats in players_stats)
+
+    for player_stats in players_stats:
+        player_stats.append(getPlayerFormfForLastTwoYears(int(player_stats[0])))
+        player_stats.append(getPlayerCoefForCurrentYear(int(player_stats[0])))
+        del player_stats[0]
+
     players_stats_lists = [[]]
     players_with_less_ten_games = [[]]
     for player in players_stats:
@@ -113,12 +122,14 @@ def getPlayerLastGames(player_id):
     dataframe.index = np.arange(1, len(dataframe) + 1)
     return dataframe
 
+
 def getPlayerNameByID(player_id):
     c, conn = db.connection()
     c.execute("SELECT PlayerName From Players WHERE PlayerID = {0}".format(player_id))
     player_name = c.fetchall()
     player_name = player_name[0][0]
     return  player_name
+
 
 def getPlayerFormfForLastTwoYears(player_id):
     c, conn = db.connection()
@@ -139,6 +150,7 @@ def getPlayerFormfForLastTwoYears(player_id):
         return round(totalscore / totalpoints * 100, 2)
     return 0
 
+
 def getPlayerCoefForCurrentYear(player_id):
     # Статистика расчитывается только за текущий год (!)
     c, conn = db.connection()
@@ -155,8 +167,3 @@ def getPlayerCoefForCurrentYear(player_id):
         totalscore = totalscore + (int(game[0].month) * coef * game[1])
     totalscore = round(totalscore, 2)
     return totalscore
-
-for i in range(40):
-    totalscore = getPlayerCoefForCurrentYear(i + 1)
-    playerName = getPlayerNameByID(i + 1)
-    print(playerName, ' - ', totalscore)

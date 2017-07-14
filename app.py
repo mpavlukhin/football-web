@@ -21,40 +21,6 @@ start_date = '01/{:d}'.format(now.year)
 end_date = '12/{:d}'.format(now.year)
 REQUEST_STRING = 'stats?start=' + start_date + '&end=' + end_date
 
-# @app.route("/stats")
-# def get_stats_for_current_year():
-#     now = dt.datetime.now()
-#     years = list(range(2011, now.year + 1))
-#
-#
-#     dataDB, last_player_before_losers = dbr.get_stats(None, None)
-#
-#     now = dt.datetime.now()
-#     start_date = '01/{:d}'.format(now.year)
-#     end_date = '12/{:d}'.format(now.year)
-#
-#     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
-#     table_html = re.sub('dataframe ', '', table_html)
-#
-#     return render_template('table.html', table=table_html, years=years, start=start_date, end=end_date,
-#                            last_player_before_losers=last_player_before_losers, source_file=FILELINK)
-#
-#
-# @app.route('/stats', methods=['POST'])
-# def get_stats_for_selected_period():
-#     start = request.form['start']
-#     end = request.form['end']
-#
-#     now = dt.datetime.now()
-#     years = list(range(2011, now.year + 1))
-#
-#     dataDB, last_player_before_losers = dbr.get_stats(start, end)
-#
-#     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
-#     table_html = re.sub('dataframe ', '', table_html)
-#     return render_template('table.html', table=table_html, years=years, start=start, end=end,
-#                            last_player_before_losers=last_player_before_losers, source_file=FILELINK)
-
 
 @app.route("/update")
 def get_spread_s():
@@ -146,24 +112,25 @@ def get_player_stat():
 @app.route("/howitcalc")
 def how_it_calc_page():
     return render_template('howitcalc.html')
+
+
 @app.errorhandler(500)
 def page_not_found(e):
-
     return render_template('error.html', request_string=REQUEST_STRING), 500
+
 
 @app.errorhandler(404)
 def page_not_found(e):
-
     return render_template('error.html', request_string=REQUEST_STRING), 404
+
 
 @app.errorhandler(410)
 def page_not_found(e):
-
     return render_template('error.html', request_string=REQUEST_STRING), 410
+
 
 @app.errorhandler(403)
 def page_not_found(e):
-
     return render_template('error.html', request_string=REQUEST_STRING), 403
 
 
