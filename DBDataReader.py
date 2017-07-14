@@ -95,3 +95,68 @@ def get_stats(start_date, end_date):
     dataframe = pd.DataFrame(players_stats_lists, columns=columns_names)
     dataframe.index = np.arange(1, len(dataframe) + 1)
     return dataframe, last_player_before_losers
+
+
+def getPlayerLastGames(player_id):
+    c, conn = db.connection()
+    c.execute("CREATE OR REPLACE VIEW PlayerStats AS "
+                "SELECT SG.SoccerGameDate AS 'Дата', MPSG.Points AS 'Очки', MPSG.GameStatus AS 'Результат' from mappingplayerssoccergames MPSG "
+                "JOIN soccergames SG WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} "
+                "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
+    c.execute("SELECT * FROM PlayerStats "
+                "LIMIT 10;")
+    playerstat = c.fetchall()
+    c.close()
+    columns_names = [i[0] for i in c.description]
+    conn.autocommit('Get Player Info')
+    dataframe = pd.DataFrame(list(playerstat), columns=columns_names)
+    dataframe.index = np.arange(1, len(dataframe) + 1)
+    return dataframe
+
+def getPlayerNameByID(player_id):
+    c, conn = db.connection()
+    c.execute("SELECT PlayerName From Players WHERE PlayerID = {0}".format(player_id))
+    player_name = c.fetchall()
+    player_name = player_name[0][0]
+    return  player_name
+
+def getPlayerFormfForLastTwoYears(player_id):
+    c, conn = db.connection()
+    c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
+                "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from mappingplayerssoccergames MPSG " 
+                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 1 YEAR) "
+                "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
+    c.execute("SELECT COUNT(*) FROM  PlayerStatsForTwoYears; ")
+    playercountgames = c.fetchone()
+    if(playercountgames[0] >= 20):
+        c.execute("SELECT * FROM PlayerStatsForTwoYears "
+                  "LIMIT 20; ")
+        playergames = c.fetchall()
+        totalscore = 0
+        totalpoints = 3 * 20
+        for game in playergames:
+            totalscore += game[1]
+        return round(totalscore / totalpoints * 100, 2)
+    return 0
+
+def getPlayerCoefForCurrentYear(player_id):
+    # Статистика расчитывается только за текущий год (!)
+    c, conn = db.connection()
+    c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
+                "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from mappingplayerssoccergames MPSG "
+                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE()) "
+                "ORDER BY SG.SoccerGameDate DESC; ".format(player_id))
+    c.execute("SELECT * FROM PlayerStatsForTwoYears; ")
+    playergames = c.fetchall()
+    lastmonth = dt.datetime.now().month
+    coef = 1 / lastmonth
+    totalscore = 0
+    for game in playergames:
+        totalscore = totalscore + (int(game[0].month) * coef * game[1])
+    totalscore = round(totalscore, 2)
+    return totalscore
+
+for i in range(40):
+    totalscore = getPlayerCoefForCurrentYear(i + 1)
+    playerName = getPlayerNameByID(i + 1)
+    print(playerName, ' - ', totalscore)
