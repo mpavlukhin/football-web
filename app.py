@@ -70,12 +70,18 @@ def index():
 
 @app.route('/stats')
 def test_func_date():
+    # BAD REQUEST handler
+    if (request.args.get('start') == None) or (request.args.get('end') == None):
+        return redirect(REQUEST_STRING)
+
     start = (request.args['start'])
     end = (request.args['end'])
     now = dt.datetime.now()
     if(start == None or end == None):
         start = '01/{:d}'.format(now.year)
         end = '12/{:d}'.format(now.year)
+
+    # Functionality
     years = list(range(2011, now.year + 1))
     dataDB, last_player_before_losers = dbr.get_stats(start, end)
     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
