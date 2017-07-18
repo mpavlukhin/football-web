@@ -171,6 +171,8 @@ class ParserFirstRange(ParserMain):
                 CONNECTION.autocommit("Add dates to SoccerGameDate")
         return datelist
 
+
+
     def getGamesScores(self, sheet):
         scorelist = [[]]
         for cell in sheet[2]:
@@ -267,7 +269,6 @@ def updatePlayersStats(filepath):
     for sheet in P.wb:
         if ((len)(sheet.title) <= 4):
             Parser = ParserFirstRange(filepath)
-            Parser.deletelastlistfromDB(sheet)
             Parser.run(sheet)
             print(sheet.title + " Complete!")
             break

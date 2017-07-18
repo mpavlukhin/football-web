@@ -31,6 +31,7 @@ CREATE TABLE `WebServiceUsers` (
 
 ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_PlayerID` FOREIGN KEY (`PlayerID`) REFERENCES `Players`(`PlayerID`);
 ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_SoccerGameID` FOREIGN KEY (`SoccerGameID`) REFERENCES `SoccerGames`(`SoccerGameID`);
+ALTER TABLE `MappingPlayersSoccerGames` ADD UNIQUE `MappingPlayersSoccerGames_UniquePlayerGame` (`PlayerID`, `SoccerGameID`);
 
 -- Insert data into tables
 -- Select data from tables
