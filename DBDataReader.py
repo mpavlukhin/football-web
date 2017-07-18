@@ -63,8 +63,8 @@ def get_stats(start_date, end_date):
 
     c.execute(cmd_get_stats)
     columns_names = [i[0] for i in c.description]
-    columns_names.append('Форма')
-    columns_names.append('Рейтинг')
+    columns_names.append('Форма*')
+    columns_names.append('Рейтинг*')
     del columns_names[0]
     players_stats = c.fetchall()
     players_stats = list(list(player_stats) for player_stats in players_stats)
@@ -109,16 +109,26 @@ def get_stats(start_date, end_date):
 def getPlayerLastGames(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStats AS "
-                "SELECT SG.SoccerGameDate AS 'Дата', MPSG.Points AS 'Очки', MPSG.GameStatus AS 'Результат' from mappingplayerssoccergames MPSG "
+                "SELECT MPSG.GameStatus AS 'Результат', MPSG.Points AS 'Очки', SG.SoccerGameDate AS 'Дата' from mappingplayerssoccergames MPSG "
                 "JOIN soccergames SG WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} "
                 "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
     c.execute("SELECT * FROM PlayerStats "
                 "LIMIT 10;")
     playerstat = c.fetchall()
     c.close()
+    playerstatlist = [list(x) for x in playerstat]
+    for game in playerstatlist:
+        list(game)
+        if(game[0] == 'D'):
+            game[0] = 'Ничья'
+        elif(game[0] =='W'):
+            game[0] = 'Победа'
+        else:
+            game[0] = 'Поражение'
+        game[2] = game[2].strftime("%d/%m/%y")
     columns_names = [i[0] for i in c.description]
     conn.autocommit('Get Player Info')
-    dataframe = pd.DataFrame(list(playerstat), columns=columns_names)
+    dataframe = pd.DataFrame(playerstatlist, columns=columns_names)
     dataframe.index = np.arange(1, len(dataframe) + 1)
     return dataframe
 
@@ -167,3 +177,31 @@ def getPlayerCoefForCurrentYear(player_id):
         totalscore = totalscore + (int(game[0].month) * coef * game[1])
     totalscore = round(totalscore, 2)
     return totalscore
+
+def getPlayerAchievements(player_id):
+    c, conn = db.connection()
+    playerachievments = []
+    c.execute("SELECT count(*) FROM mappingplayerssoccergames MPSG JOIN soccergames SG " 
+                "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) "
+    "AND PlayerID = {0};".format(player_id))
+    totalGamesForCurrentYear = c.fetchone()
+
+    c.execute("SELECT count(*) FROM mappingplayerssoccergames MPSG JOIN soccergames SG "
+        "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} AND MPSG.GameStatus = 'W';".format(player_id))
+    totalWins = c.fetchone()
+
+    c.execute("SELECT count(*) FROM mappingplayerssoccergames MPSG JOIN soccergames SG "
+        "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) " 
+        "AND PlayerID = {0} AND MPSG.GameStatus = 'W';".format(player_id))
+    totalWinsForCurrentYear = c.fetchone()
+
+    c.execute("SELECT count(*) FROM mappingplayerssoccergames MPSG JOIN soccergames SG " 
+                "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0};".format(player_id))
+    totalGames = c.fetchone()
+
+    playerachievments.append(totalGamesForCurrentYear[0])
+    playerachievments.append(totalWinsForCurrentYear[0])
+    playerachievments.append(totalGames[0])
+    playerachievments.append(totalWins[0])
+
+    return  playerachievments
