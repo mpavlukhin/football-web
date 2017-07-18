@@ -1,5 +1,5 @@
 $(function(){
     $('table').tablesorter({
-        sortInitialOrder: "desc"
+        sortInitialOrder: 'desc'
     });
 });
