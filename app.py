@@ -10,17 +10,14 @@ import re
 
 import dbconnect as db
 
+from html5print import HTMLBeautifier
+
 app = Flask(__name__)
 
 dataSheet = None
 data = None
 
 FILELINK = ''
-now = dt.datetime.now()
-start_date = '01/{:d}'.format(now.year)
-end_date = '12/{:d}'.format(now.year)
-REQUEST_STRING = 'stats?start=' + start_date + '&end=' + end_date
-
 
 @app.route("/update")
 def get_spread_s():
@@ -62,42 +59,43 @@ def get_login_info():
     return render_template('auth.html', message=msg)
 
 
-@app.route("/")
-def index():
-
-    return redirect(REQUEST_STRING)
-
-
 @app.route('/stats')
-def test_func_date():
-    # BAD REQUEST handler
-    if (request.args.get('start') == None) or (request.args.get('end') == None):
-        return redirect(REQUEST_STRING)
-
+def get_stats_table():
     start = (request.args['start'])
     end = (request.args['end'])
+
+    if (start == None) or (end == None):
+        now = dt.datetime.now()
+        start_date = '01/{:d}'.format(now.year)
+        end_date = '12/{:d}'.format(now.year)
+        request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+        return redirect(request_str)
+
+    start_date_month, start_date_year = start.split('/')
+    end_date_month, end_date_year = end.split('/')
+
+    if (start_date_year > end_date_year) or \
+            ((start_date_year == end_date_year) and (start_date_month > end_date_month)):
+        return render_template('error.html', request_string=request_str), 400
+
     now = dt.datetime.now()
     if(start == None or end == None):
         start = '01/{:d}'.format(now.year)
         end = '12/{:d}'.format(now.year)
 
-    # Functionality
     years = list(range(2011, now.year + 1))
     dataDB, last_player_before_losers = dbr.get_stats(start, end)
     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
     table_html = re.sub('dataframe ', '', table_html)
 
     if(re.match('[\d][\d]/[\d][\d][\d][\d]', start) != None and re.match('[\d][\d]/[\d][\d][\d][\d]', end) != None):
-        return render_template('table.html', table=table_html, years=years, start=start, end=end,
-                           last_player_before_losers=last_player_before_losers, source_file=FILELINK)
+        return HTMLBeautifier.beautify(render_template('table.html', table=table_html, years=years, start=start, end=end,
+                           last_player_before_losers=last_player_before_losers, source_file=FILELINK), 4)
 
-
-@app.route('/stats/')
-def test_with_slash():
-    return redirect(REQUEST_STRING)
 
 @app.route("/stats", methods=['POST'])
-def test_func_post_method():
+def get_stats_table_for_selected_period():
     start_date = request.form['start']
     end_date = request.form['end']
 
@@ -105,15 +103,25 @@ def test_func_post_method():
     return redirect("/stats" + redirect_url)
 
 
-@app.route("/playerstat")
-def get_player_stat():
+@app.route('/stats/')
+def stats_slash_handler():
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return redirect(request_str)
+
+
+@app.route("/playerstats")
+def get_player_stats():
     player_id = (int)(request.args['id'])
     dataDB = dbr.getPlayerLastGames(player_id)
     player_name = dbr.getPlayerNameByID(player_id)
     playerachievments = dbr.getPlayerAchievements(player_id)
     table_html = dataDB.to_html(classes='playertable')
     table_html = re.sub('dataframe ', '', table_html)
-    return render_template('playerstat.html', table=table_html, player_name=player_name, playerachievments= playerachievments)
+    return render_template('playerstat.html', table=table_html, player_name=player_name, playerachievments= playerachievments, player_link='#')
 
 
 @app.route("/howitcalc")
@@ -123,22 +131,52 @@ def how_it_calc_page():
 
 @app.errorhandler(500)
 def page_not_found(e):
-    return render_template('error.html', request_string=REQUEST_STRING), 500
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return render_template('error.html', request_string=request_str), 500
 
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('error.html', request_string=REQUEST_STRING), 404
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return render_template('error.html', request_string=request_str), 404
 
 
 @app.errorhandler(410)
 def page_not_found(e):
-    return render_template('error.html', request_string=REQUEST_STRING), 410
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return render_template('error.html', request_string=request_str), 410
 
 
 @app.errorhandler(403)
 def page_not_found(e):
-    return render_template('error.html', request_string=REQUEST_STRING), 403
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return render_template('error.html', request_string=request_str), 403
+
+
+@app.route("/")
+def index():
+    now = dt.datetime.now()
+    start_date = '01/{:d}'.format(now.year)
+    end_date = '12/{:d}'.format(now.year)
+    request_str = 'stats?start=' + start_date + '&end=' + end_date
+
+    return redirect(request_str)
 
 
 if __name__ == '__main__':

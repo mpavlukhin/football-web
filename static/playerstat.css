@@ -28,7 +28,6 @@ table.playertable, .playertable th, .playertable td {
 
  }
 .playertable th {
-	cursor: pointer;
     background-color: #327dff;
     color: white;
 }
@@ -49,21 +48,6 @@ table.playertable .header {
 }
 
 
-table.tablesorter .headerSortUp {
-	background-image: url(asc.gif);
-	background-repeat: no-repeat;
-	background-position: center bottom;
-	background-color: #0151dc;
-}
-
-table.tablesorter .headerSortDown {
-	background-image: url(desc.gif);
-	background-repeat: no-repeat;
-	background-position: center bottom;
-	background-color: #0151dc;
-}
-
-
 #player-stat {
     text-align: center;
     position: fixed;
@@ -75,9 +59,8 @@ table.tablesorter .headerSortDown {
 
 #player-stat-title {
     font-weight: bold;
-    float: none;
+    float: left;
     font-size: 30px;
-    margin-bottom: 200px;
-    text-align: center;
+    margin-top: 20px;
 }
 

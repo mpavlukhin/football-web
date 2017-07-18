@@ -14,9 +14,12 @@ table.tablesorter, .tablesorter th, .tablesorter td {
 }
 
 .tablesorter th {
-	cursor: pointer;
     background-color: #327dff;
     color: white;
+}
+
+.tablesorter tr {
+    cursor: pointer;
 }
 
 .tablesorter tr:nth-child(odd)    { background-color:#eee; }

@@ -4,46 +4,32 @@
     <title>Футбольная статистика</title>
     <link rel="icon" type="image/ico" href="./static/favicon.ico" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/i18n/defaults-*.min.js"></script>
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./static/bootstrap-select.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="./static/bootstrap-select.js"></script>
 
     <link rel=stylesheet type=text/css href="./static/playerstat.css">
-
-    <script src="./static/losers.js"></script>
-
-	<script type="text/javascript" src="./static/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="./static/tablesorter.js"></script>
-	<script type="text/javascript" src="./static/script.js"></script>
     <style>
     .wrapper {
        width:100%;
-        }
+    }
 
-.left_block {
-float: left;
-width: 50%;
-margin: auto;
-}
+    .left_block {
+    float: left;
+    width: 50%;
+    margin: auto;
+    }
 
-.right_block {
-float: right;
-width: 50%;
-margin: auto;
-}
+    .right_block {
+    float: right;
+    width: 50%;
+    margin: auto;
+    }
     </style>
 </head>
 
 <body>
     <nav class="navbar navbar-default" id="player-stat">
-          <a class="navbar-brand" id="player-stat-title">Статистика игрока {{ player_name }}</a>
+          <a class="navbar-brand" id="player-stat-title" href="{{player_link}}">Статистика игрока {{ player_name }}</a>
+          <a class="navbar-brand" id="player-stat-title" style="float: right" href="/">Вернуться на главную</a>
     </nav>
 
     <div class="container" >
@@ -89,7 +75,7 @@ margin: auto;
                 <h4>Отыграть 50 игр за текущий сезон</h4>
     </br>
 
-        <h3>Бывалый</h3>
+        <h3>Свой среди своих</h3>
                 {% if playerachievments[2] >= 100 %}
         <img src="../static/images/100Games.png" width="100" alt="100GamesCup">
         <center>Достижение заработано!</center>
