@@ -3,6 +3,9 @@ import pandas as pd
 import datetime as dt
 import calendar as cal
 import numpy as np
+import math
+from datetime import date, timedelta
+from calendar import monthrange
 
 def normalize_date_for_db(date, is_end_date=True):
     date_month, date_year = date.split('/')
@@ -182,16 +185,28 @@ def getPlayerCoefForCurrentYear(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from mappingplayerssoccergames MPSG "
-                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE()) "
+                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND SG.SoccerGameDate > DATE_SUB(now(), INTERVAL 12 MONTH) "
                 "ORDER BY SG.SoccerGameDate DESC; ".format(player_id))
     c.execute("SELECT * FROM PlayerStatsForTwoYears; ")
     playergames = c.fetchall()
-    lastmonth = dt.datetime.now().month
-    coef = 1 / lastmonth
+    currentmonth = dt.datetime.now().month
+    intcurrentmonth = int(currentmonth)
+    coef = 1 / 12
+    currentcoef = 1
     totalscore = 0
+    tableofcoef = {}
+    for x in range(12):
+        tempdict = {currentmonth: currentcoef}
+        tableofcoef.update(tempdict)
+        currentmonth = currentmonth - 1
+        if(currentmonth == 0):
+            currentmonth = 12
+        currentcoef = currentcoef - coef
     for game in playergames:
-        totalscore = totalscore + (int(game[0].month) * coef * game[1])
+        currentcoef = tableofcoef.get(game[0].month)
+        totalscore = totalscore + currentcoef * game[1]
     totalscore = round(totalscore, 2)
+    print(player_id, totalscore)
     return totalscore
 
 def getPlayerAchievements(player_id):
@@ -215,9 +230,27 @@ def getPlayerAchievements(player_id):
                 "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0};".format(player_id))
     totalGames = c.fetchone()
 
+    c.execute("CREATE OR REPLACE VIEW PlayerMaxPoints AS "
+                "SELECT COUNT(GameStatus) as TotalWins, P.PlayerName FROM mappingplayerssoccergames MPSG " \
+                "JOIN soccergames SG ON MPSG.SoccerGameID = SG.SoccerGameID " \
+                "JOIN players P ON P.PlayerID = MPSG.PlayerID " \
+                "WHERE GameStatus = \'W\' AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) group by PlayerName " \
+                "order by COUNT(GameStatus) DESC " \
+                "LIMIT 1;")
+    c.execute("SELECT PlayerName FROM PlayerMaxPoints;")
+    maxWinsPlayerName = c.fetchall()[0]
+    maxWinsPlayerName = maxWinsPlayerName[0]
+
     playerachievments.append(totalGamesForCurrentYear[0])
     playerachievments.append(totalWinsForCurrentYear[0])
     playerachievments.append(totalGames[0])
     playerachievments.append(totalWins[0])
+    playerachievments.append(maxWinsPlayerName)
+
 
     return  playerachievments
+
+
+
+
+

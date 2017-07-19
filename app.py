@@ -131,7 +131,7 @@ def get_player_stats():
     player_achievments = dbr.getPlayerAchievements(player_id)
     table_html = dataDB.to_html(classes='playertable')
     table_html = re.sub('dataframe ', '', table_html)
-    return render_template('playerstat.html', table=table_html, player_name=player_name, player_achievments= player_achievments)
+    return render_template('playerstat.html', table=table_html, player_name=player_name, playerachievments= player_achievments)
 
 
 @app.route("/howitcalc")

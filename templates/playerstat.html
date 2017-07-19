@@ -9,7 +9,7 @@
     <link rel=stylesheet type=text/css href="./static/playerstat.css">
     <style>
         .wrapper {
-           width:100%;
+        width:100%;
         }
 
         .left_block {
@@ -44,16 +44,16 @@
     <div class="left_block" align="center">
 
 <h3>Мама, я в статистике!</h3>
-        {% if player_achievments[0] >= 10 %}
+        {% if playerachievments[0] >= 10 %}
         <img src="../static/images/10Games.png" width="100" alt="10GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
 <div class="progress"  style="width: 50%" >
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[0] }} aria-valuemin="0" aria-valuemax="10"
-       style=" width:{{ player_achievments[0] / 10 * 100}}%">
+  aria-valuenow={{ playerachievments[0] }} aria-valuemin="0" aria-valuemax="10"
+       style=" width:{{ playerachievments[0] / 10 * 100}}%">
     </div>
-     <span>{{ player_achievments[0] }} / 10</span>
+     <span>{{ playerachievments[0] }} / 10</span>
 
 </div>
               {% endif %}
@@ -61,14 +61,14 @@
     </br>
 
         <h3>Я только размялся</h3>
-                {% if player_achievments[0] >= 50 %}
+                {% if playerachievments[0] >= 50 %}
         <img src="../static/images/50Games.png" width="100" alt="50GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[0] }} aria-valuemin="0" aria-valuemax="50" style="width:{{ player_achievments[0] / 50 * 100}}%">
-      <span>{{ player_achievments[0] }} / 50</span>
+  aria-valuenow={{ playerachievments[0] }} aria-valuemin="0" aria-valuemax="50" style="width:{{ playerachievments[0] / 50 * 100}}%">
+      <span>{{ playerachievments[0] }} / 50</span>
        </div>
             </div>
       {% endif %}
@@ -76,14 +76,14 @@
     </br>
 
         <h3>Свой среди своих</h3>
-                {% if player_achievments[2] >= 100 %}
+                {% if playerachievments[2] >= 100 %}
         <img src="../static/images/100Games.png" width="100" alt="100GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[2] }} aria-valuemin="0" aria-valuemax="100" style="width:{{ player_achievments[2] }}%">
-      <span>{{ player_achievments[2] }} / 100</span>
+  aria-valuenow={{ playerachievments[2] }} aria-valuemin="0" aria-valuemax="100" style="width:{{ playerachievments[2] }}%">
+      <span>{{ playerachievments[2] }} / 100</span>
        </div>
             </div>
       {% endif %}
@@ -91,14 +91,14 @@
     </br>
 
         <h3>Ветеран футбольных действий</h3>
-                {% if player_achievments[2] >= 200 %}
+                {% if playerachievments[2] >= 200 %}
         <img src="../static/images/200Games.png" width="100" alt="50GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[2] }} aria-valuemin="0" aria-valuemax="200" style="width:{{ player_achievments[2] / 200 * 100}}%">
-      <span>{{ player_achievments[2] }} / 200</span>
+  aria-valuenow={{ playerachievments[2] }} aria-valuemin="0" aria-valuemax="200" style="width:{{ playerachievments[2] / 200 * 100}}%">
+      <span>{{ playerachievments[2] }} / 200</span>
        </div>
             </div>
       {% endif %}
@@ -106,14 +106,14 @@
     </br>
 
         <h3>Футбольный маньяк</h3>
-                {% if player_achievments[2] >= 500 %}
+                {% if playerachievments[2] >= 500 %}
         <img src="../static/images/500Games.png" width="100" alt="50GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[2] }} aria-valuemin="0" aria-valuemax="500" style="width:{{ player_achievments[2] / 500 * 100}}%">
-      <span>{{ player_achievments[2] }} / 500</span>
+  aria-valuenow={{ playerachievments[2] }} aria-valuemin="0" aria-valuemax="500" style="width:{{ playerachievments[2] / 500 * 100}}%">
+      <span>{{ playerachievments[2] }} / 500</span>
        </div>
             </div>
       {% endif %}
@@ -125,16 +125,16 @@
 
 
 <h3>Новый год, новые победы</h3>
-        {% if player_achievments[1] >= 10 %}
+        {% if playerachievments[1] >= 10 %}
         <img src="../static/images/10Wins.png" width="100" alt="10WinsCup">
         <center>Достижение заработано!</center>
         {% else %}
 <div class="progress"  style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[1] }} aria-valuemin="0" aria-valuemax="10"
-       style="width:{{ player_achievments[1] / 10 * 100}}%">
+  aria-valuenow={{ playerachievments[1] }} aria-valuemin="0" aria-valuemax="10"
+       style="width:{{ playerachievments[1] / 10 * 100}}%">
     </div>
-     <span>{{ player_achievments[1] }} / 10</span>
+     <span>{{ playerachievments[1] }} / 10</span>
 
 </div>
               {% endif %}
@@ -142,14 +142,14 @@
     </br>
 
         <h3>Вошел во вкус</h3>
-                {% if player_achievments[1] >= 50 %}
+                {% if playerachievments[1] >= 50 %}
         <img src="../static/images/50Wins.png" width="100" alt="50WinsCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[1] }} aria-valuemin="0" aria-valuemax="50" style="width:{{ player_achievments[1] / 50 * 100}}%">
-      <span>{{ player_achievments[1] }} / 50</span>
+  aria-valuenow={{ playerachievments[1] }} aria-valuemin="0" aria-valuemax="50" style="width:{{ playerachievments[1] / 50 * 100}}%">
+      <span>{{ playerachievments[1] }} / 50</span>
        </div>
             </div>
       {% endif %}
@@ -157,14 +157,14 @@
     </br>
 
         <h3>Сотка за плечами</h3>
-                {% if player_achievments[3] >= 100 %}
+                {% if playerachievments[3] >= 100 %}
         <img src="../static/images/100Wins.png" width="100" alt="100GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[3] }} aria-valuemin="0" aria-valuemax="100" style="width:{{ player_achievments[3] }}%">
-      <span>{{ player_achievments[3] }} / 100</span>
+  aria-valuenow={{ playerachievments[3] }} aria-valuemin="0" aria-valuemax="100" style="width:{{ playerachievments[3] }}%">
+      <span>{{ playerachievments[3] }} / 100</span>
        </div>
             </div>
       {% endif %}
@@ -172,14 +172,14 @@
     </br>
 
         <h3>Больше можно уже не выигрывать</h3>
-                {% if player_achievments[3] >= 200 %}
+                {% if playerachievments[3] >= 200 %}
         <img src="../static/images/200Wins.png" width="100" alt="50GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[3] }} aria-valuemin="0" aria-valuemax="200" style="width:{{ player_achievments[3] / 200 * 100}}%">
-      <span>{{ player_achievments[3] }} / 200</span>
+  aria-valuenow={{ playerachievments[3] }} aria-valuemin="0" aria-valuemax="200" style="width:{{ playerachievments[3] / 200 * 100}}%">
+      <span>{{ playerachievments[3] }} / 200</span>
        </div>
             </div>
       {% endif %}
@@ -187,19 +187,20 @@
     </br>
 
         <h3>Я создал слово "победа"</h3>
-                {% if player_achievments[3] >= 500 %}
+                {% if playerachievments[3] >= 500 %}
         <img src="../static/images/500Wins.png" width="100" alt="50GamesCup">
         <center>Достижение заработано!</center>
         {% else %}
         <div class="progress" style="width: 50%">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow={{ player_achievments[3] }} aria-valuemin="0" aria-valuemax="500" style="width:{{ player_achievments[3] / 500 * 100}}%">
-      <span>{{ player_achievments[3] }} / 500</span>
+  aria-valuenow={{ playerachievments[3] }} aria-valuemin="0" aria-valuemax="500" style="width:{{ playerachievments[3] / 500 * 100}}%">
+      <span>{{ playerachievments[3] }} / 500</span>
        </div>
             </div>
       {% endif %}
                 <h4>Выиграть 500 игр за всё время</h4>
     </br>
         </div>
-
+    </div>
 </body>
+
