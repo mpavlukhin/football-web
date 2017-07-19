@@ -36,3 +36,10 @@ GROUP BY MPSG.PlayerID
 
 -- HAVING SG.SoccerGameDate > CONVERT('2014-06-24', DATE)
 ;
+
+
+SELECT * FROM players;
+
+SELECT PlayerID
+FROM Players
+WHERE PlayerName = 'Кленов'

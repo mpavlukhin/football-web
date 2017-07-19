@@ -47,7 +47,6 @@ table.playertable .header {
 	height: 30px;
 }
 
-
 #player-stat {
     text-align: center;
     position: fixed;
@@ -57,7 +56,7 @@ table.playertable .header {
     border-bottom: solid #dedede;
 }
 
-#player-stat-title {
+.player-stat-title {
     font-weight: bold;
     float: left;
     font-size: 30px;

@@ -133,12 +133,28 @@ def getPlayerLastGames(player_id):
     return dataframe
 
 
-def getPlayerNameByID(player_id):
+# def getPlayerNameByID(player_id):
+#     c, conn = db.connection()
+#     c.execute("SELECT PlayerName From Players WHERE PlayerID = {0}".format(player_id))
+#     player_name = c.fetchall()
+#     player_name = player_name[0][0]
+#     return player_name
+
+
+def get_player_id_by_name(player_name):
     c, conn = db.connection()
-    c.execute("SELECT PlayerName From Players WHERE PlayerID = {0}".format(player_id))
-    player_name = c.fetchall()
-    player_name = player_name[0][0]
-    return  player_name
+
+    cmd_get_id_by_name = "SELECT PlayerID" \
+                         " FROM Players " \
+                         "WHERE PlayerName = '{:s}'"\
+                         .format(player_name)
+
+    c.execute(cmd_get_id_by_name)
+
+    player_id = c.fetchone()
+    player_id = player_id[0]
+
+    return player_id
 
 
 def getPlayerFormfForLastTwoYears(player_id):
