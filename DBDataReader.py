@@ -136,14 +136,6 @@ def getPlayerLastGames(player_id):
     return dataframe
 
 
-# def getPlayerNameByID(player_id):
-#     c, conn = db.connection()
-#     c.execute("SELECT PlayerName From Players WHERE PlayerID = {0}".format(player_id))
-#     player_name = c.fetchall()
-#     player_name = player_name[0][0]
-#     return player_name
-
-
 def get_player_id_by_name(player_name):
     c, conn = db.connection()
 
@@ -190,7 +182,6 @@ def getPlayerCoefForCurrentYear(player_id):
     c.execute("SELECT * FROM PlayerStatsForTwoYears; ")
     playergames = c.fetchall()
     currentmonth = dt.datetime.now().month
-    intcurrentmonth = int(currentmonth)
     coef = 1 / 12
     currentcoef = 1
     totalscore = 0
@@ -207,6 +198,7 @@ def getPlayerCoefForCurrentYear(player_id):
         totalscore = totalscore + currentcoef * game[1]
     totalscore = round(totalscore, 2)
     return totalscore
+
 
 def getPlayerAchievements(player_id):
     c, conn = db.connection()

@@ -18,6 +18,7 @@ dataSheet = None
 data = None
 
 FILELINK = ''
+GAUTH = None
 
 
 def get_default_request_string():
@@ -29,24 +30,49 @@ def get_default_request_string():
     return request_str
 
 
+def google_authentication_init():
+    global GAUTH
+    GAUTH = drive.google_auth_init()
+    drive.oauth_redirect_handler(GAUTH)
+
+
+def admin_form_requester():
+    login = request.form['login']
+    password = request.form['password']
+    code = request.form['code']
+
+    return login, password, code
+
+
+def admin_form_checker(login, password, code):
+    user_lists = db.getWebServiceUsers()
+
+    for user in user_lists:
+        if login == user[0] and password == user[1]:
+            return True
+
+        else:
+            msg = 'Что-то введено не так...'
+            return render_template('auth.html', message=msg)
+
+
 @app.route("/update")
 def get_spread_s():
+    google_authentication_init()
     return render_template('auth.html')
 
 
 @app.route("/update", methods=['POST'])
 def get_login_info_update():
-    global data, dataSheet
-    login = request.form['login']
-    password = request.form['password']
-    userlists = db.getWebServiceUsers()
-    for user in userlists:
-        if login == user[0] and password == user[1]:
-            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-            data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-            return redirect("/stats")
-    msg = 'Wrong login or password'
-    return render_template('auth.html', message=msg)
+    global data, dataSheet, GAUTH
+
+    login, password, code = admin_form_requester()
+    drive.oauth_authenticate(GAUTH, code)
+
+    if admin_form_checker(login, password, code):
+        dataSheet = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
+        data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        return redirect("/stats")
 
 
 @app.route("/create")
@@ -56,25 +82,24 @@ def login_in():
 
 @app.route("/create", methods=['POST'])
 def get_login_info():
-    global data, dataSheet
-    login = request.form['login']
-    password = request.form['password']
-    userlists = db.getWebServiceUsers()
-    for user in userlists:
-        if login == user[0] and password == user[1]:
-            dataSheet = drive.downloadxlsx('Football-bigdata-v0.2')
-            data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
-            return redirect("/stats")
-    msg = 'Wrong login or password'
-    return render_template('auth.html', message=msg)
+    global data, dataSheet, GAUTH
+
+    login, password, code = admin_form_requester()
+    drive.oauth_authenticate(GAUTH, code)
+
+    if admin_form_checker(login, password, code):
+        dataSheet = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
+        data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        return redirect("/stats")
 
 
 @app.route('/stats')
 def get_stats_table():
-    start = (request.args['start'])
-    end = (request.args['end'])
+    try:
+        start = (request.args['start'])
+        end = (request.args['end'])
 
-    if (start is None) or (end is None):
+    except:
         request_str = get_default_request_string()
         return redirect(request_str)
 
@@ -87,10 +112,6 @@ def get_stats_table():
         return render_template('error.html', request_string=request_str), 400
 
     now = dt.datetime.now()
-    if (start is None) or (end is None):
-        start = '01/{:d}'.format(now.year)
-        end = '12/{:d}'.format(now.year)
-
     years = list(range(2011, now.year + 1))
     dataDB, last_player_before_losers = dbr.get_stats(start, end)
     table_html = dataDB.to_html(classes='tablesorter" id="statistics')
@@ -170,6 +191,6 @@ def index():
 
 
 if __name__ == '__main__':
-    dataSheet, FILELINK = drive.downloadxlsx('Football-bigdata-v0.2')
+    # dataSheet, FILELINK = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
     app.run(threaded=True)
     redirect("../")
