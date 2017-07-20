@@ -2,14 +2,17 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
 
+
+
 def downloadxlsx(fileTitle):
     # create method for auth!!!
     gauth = GoogleAuth()
-    gauth.LocalWebserverAuth() # Creates local webserver and auto handles authentication.
+    authurl = gauth.GetAuthUrl()
 
+    gauth.CommandLineAuth()
     mimetypes = {
         # Drive Document files as MS Word files.
-        #'application/vnd.google-apps.document': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        # 'application/vnd.google-apps.document': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 
         # Drive Sheets files as MS Excel files.
         'application/vnd.google-apps.spreadsheet': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

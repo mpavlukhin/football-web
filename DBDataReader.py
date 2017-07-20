@@ -206,7 +206,6 @@ def getPlayerCoefForCurrentYear(player_id):
         currentcoef = tableofcoef.get(game[0].month)
         totalscore = totalscore + currentcoef * game[1]
     totalscore = round(totalscore, 2)
-    print(player_id, totalscore)
     return totalscore
 
 def getPlayerAchievements(player_id):
