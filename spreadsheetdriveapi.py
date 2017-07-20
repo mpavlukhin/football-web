@@ -1,15 +1,9 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-import webbrowser
-
 
 def google_auth_init():
     return GoogleAuth()
-
-
-def oauth_redirect_handler(gauth):
-    return webbrowser.open_new_tab(gauth.GetAuthUrl())
 
 
 def oauth_authenticate(gauth, code):

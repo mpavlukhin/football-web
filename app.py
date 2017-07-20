@@ -33,7 +33,6 @@ def get_default_request_string():
 def google_authentication_init():
     global GAUTH
     GAUTH = drive.google_auth_init()
-    drive.oauth_redirect_handler(GAUTH)
 
 
 def admin_form_requester():
@@ -59,7 +58,7 @@ def admin_form_checker(login, password, code):
 @app.route("/update")
 def get_spread_s():
     google_authentication_init()
-    return render_template('auth.html')
+    return render_template('auth.html', google_auth_link=GAUTH.GetAuthUrl())
 
 
 @app.route("/update", methods=['POST'])

@@ -48,5 +48,17 @@
   </div>
 </form>
 </div>
+
+<script>
+    var encodedStr = '{{google_auth_link}}';
+
+    var parser = new DOMParser;
+    var dom = parser.parseFromString(
+        '<!doctype html><body>' + encodedStr,
+        'text/html');
+    var decodedString = dom.body.textContent;
+    window.open(decodedString);
+
+</script>
 </body>
 </html>
