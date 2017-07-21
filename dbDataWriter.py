@@ -26,8 +26,8 @@ CURSOR, CONNECTION = db.connection()
 # Понять как сделать обшую функцию для расчета статистики на текущей странице
 #
 class ParserMain():
-
     def getPlayersList(self):
+        # CURSOR, CONNECTION = db.connection()
         playersList = []
         column = 'B'
         for sheet in self.wb:
@@ -71,6 +71,8 @@ class ParserMain():
 
 
     def getPlayersStats(self, sheet, datelist, playerslist, gamesscore):
+        # CURSOR, CONNECTION = db.connection()
+
         playerresult = 'L'
         playerscore = 0
         typeofgame = ''
@@ -158,6 +160,8 @@ class ParserMain():
 class ParserFirstRange(ParserMain):
 
     def getGamesDates(self, sheet):
+        # CURSOR, CONNECTION = db.connection()
+
         c, conn = db.connection()
         datelist = []
         for cell in sheet[1]:
@@ -187,6 +191,8 @@ class ParserFirstRange(ParserMain):
 
 
     def deletelastlistfromDB(self, sheet):
+        # CURSOR, CONNECTION = db.connection()
+
         titledata = sheet.title
         titleyear = (str)(titledata[-2:])
         titlemonth = (str)(titledata.replace(' ', '')[:-2])
@@ -206,8 +212,8 @@ class ParserFirstRange(ParserMain):
 
 
 class ParserSecondRange(ParserMain):
-
     def getGamesDates(self, sheet):
+        # CURSOR, CONNECTION = db.connection()
         datelist = []
         for cell in sheet['B']:
             if(cell.value == "дата"):

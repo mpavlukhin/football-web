@@ -193,6 +193,5 @@ def index():
 
 
 if __name__ == '__main__':
-    # dataSheet, FILELINK = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
-    app.run(threaded=True)
-    redirect("../")
+    db.create_db()
+    app.run()
