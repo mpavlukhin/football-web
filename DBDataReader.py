@@ -112,8 +112,8 @@ def get_stats(start_date, end_date):
 def getPlayerLastGames(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStats AS "
-                "SELECT MPSG.GameStatus AS 'Результат', MPSG.Points AS 'Очки', SG.SoccerGameDate AS 'Дата' from MappingPlayersSoccergames MPSG "
-                "JOIN soccergames SG WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} "
+                "SELECT MPSG.GameStatus AS 'Результат', MPSG.Points AS 'Очки', SG.SoccerGameDate AS 'Дата' from MappingPlayersSoccerGames MPSG "
+                "JOIN SoccerGames SG WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} "
                 "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
     c.execute("SELECT * FROM PlayerStats "
                 "LIMIT 10;")
@@ -156,7 +156,7 @@ def getPlayerFormfForLastTwoYears(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from MappingPlayersSoccerGames MPSG " 
-                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 1 YEAR) "
+                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 1 YEAR) "
                 "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
     c.execute("SELECT COUNT(*) FROM  PlayerStatsForTwoYears; ")
     playercountgames = c.fetchone()
@@ -177,7 +177,7 @@ def getPlayerCoefForCurrentYear(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from MappingPlayersSoccerGames MPSG "
-                "JOIN soccergames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND SG.SoccerGameDate > DATE_SUB(now(), INTERVAL 12 MONTH) "
+                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND SG.SoccerGameDate > DATE_SUB(now(), INTERVAL 12 MONTH) "
                 "ORDER BY SG.SoccerGameDate DESC; ".format(player_id))
     c.execute("SELECT * FROM PlayerStatsForTwoYears; ")
     playergames = c.fetchall()
@@ -203,27 +203,27 @@ def getPlayerCoefForCurrentYear(player_id):
 def getPlayerAchievements(player_id):
     c, conn = db.connection()
     playerachievments = []
-    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN soccergames SG " 
+    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN SoccerGames SG " 
                 "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) "
     "AND PlayerID = {0};".format(player_id))
     totalGamesForCurrentYear = c.fetchone()
 
-    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN soccergames SG "
+    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN SoccerGames SG "
         "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0} AND MPSG.GameStatus = 'W';".format(player_id))
     totalWins = c.fetchone()
 
-    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN soccergames SG "
+    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN SoccerGames SG "
         "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) " 
         "AND PlayerID = {0} AND MPSG.GameStatus = 'W';".format(player_id))
     totalWinsForCurrentYear = c.fetchone()
 
-    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN soccergames SG " 
+    c.execute("SELECT count(*) FROM MappingPlayersSoccerGames MPSG JOIN SoccerGames SG " 
                 "WHERE SG.SoccerGameID = MPSG.SoccerGameID AND PlayerID = {0};".format(player_id))
     totalGames = c.fetchone()
 
     c.execute("CREATE OR REPLACE VIEW PlayerMaxPoints AS "
                 "SELECT COUNT(GameStatus) as TotalWins, P.PlayerName FROM MappingPlayersSoccerGames MPSG " \
-                "JOIN soccergames SG ON MPSG.SoccerGameID = SG.SoccerGameID " \
+                "JOIN SoccerGames SG ON MPSG.SoccerGameID = SG.SoccerGameID " \
                 "JOIN players P ON P.PlayerID = MPSG.PlayerID " \
                 "WHERE GameStatus = \'W\' AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) group by PlayerName " \
                 "order by COUNT(GameStatus) DESC " \
