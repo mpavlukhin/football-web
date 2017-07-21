@@ -39,7 +39,7 @@ def recreateDB():
     c.execute("ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_PlayerID` FOREIGN KEY (`PlayerID`) REFERENCES `Players`(`PlayerID`);")
     c.execute("ALTER TABLE `MappingPlayersSoccerGames` ADD CONSTRAINT `MappingPlayersSoccerGames_SoccerGameID` FOREIGN KEY (`SoccerGameID`) REFERENCES `SoccerGames`(`SoccerGameID`);")
     c.execute("ALTER TABLE `MappingPlayersSoccerGames` ADD UNIQUE `MappingPlayersSoccerGames_UniquePlayerGame` (`PlayerID`, `SoccerGameID`);")
-    c.execute("INSERT INTO Webserviceusers VALUES ('admin', 'football64');")
+    c.execute("INSERT INTO WebServiceUsers VALUES ('admin', 'football64');")
     conn.autocommit("Recreating DB")
     print("Database successfully recreated!")
 
