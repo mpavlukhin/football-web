@@ -224,7 +224,7 @@ def getPlayerAchievements(player_id):
     c.execute("CREATE OR REPLACE VIEW PlayerMaxPoints AS "
                 "SELECT COUNT(GameStatus) as TotalWins, P.PlayerName FROM MappingPlayersSoccerGames MPSG " \
                 "JOIN SoccerGames SG ON MPSG.SoccerGameID = SG.SoccerGameID " \
-                "JOIN players P ON P.PlayerID = MPSG.PlayerID " \
+                "JOIN Players P ON P.PlayerID = MPSG.PlayerID " \
                 "WHERE GameStatus = \'W\' AND YEAR(SG.SoccerGameDate) >= YEAR(curdate()) group by PlayerName " \
                 "order by COUNT(GameStatus) DESC " \
                 "LIMIT 1;")
