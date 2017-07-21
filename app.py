@@ -56,9 +56,10 @@ def admin_form_checker(login, password, code):
 
 
 @app.route("/update")
-def get_spread_s():
+def login_in_update():
     google_authentication_init()
-    return render_template('auth.html', google_auth_link=GAUTH.GetAuthUrl())
+    google_authentication_redirect = GAUTH.GetAuthUrl()
+    return render_template('auth.html', google_auth_link=google_authentication_redirect)
 
 
 @app.route("/update", methods=['POST'])
@@ -75,8 +76,10 @@ def get_login_info_update():
 
 
 @app.route("/create")
-def login_in():
-    return render_template('auth.html')
+def login_in_create():
+    google_authentication_init()
+    google_authentication_redirect = GAUTH.GetAuthUrl()
+    return render_template('auth.html', google_auth_link=google_authentication_redirect)
 
 
 @app.route("/create", methods=['POST'])
