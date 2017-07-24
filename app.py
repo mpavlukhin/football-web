@@ -193,5 +193,6 @@ def index():
 
 
 if __name__ == '__main__':
-    db.create_db()
+    if not db.db_existence_checker('Football'):
+        db.create_db()
     app.run()

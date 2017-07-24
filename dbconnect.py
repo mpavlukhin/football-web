@@ -19,6 +19,22 @@ def connection(is_first=False):
     return c, conn
 
 
+def db_existence_checker(db_name):
+    c, conn = connection(True)
+    cmd_check_existence = 'SELECT SCHEMA_NAME ' \
+                          'FROM INFORMATION_SCHEMA.SCHEMATA ' \
+                          'WHERE SCHEMA_NAME = "{:s}"'.format(db_name)
+
+    c.execute(cmd_check_existence)
+
+    db_schema_name = c.fetchone()
+
+    if db_schema_name is not None:
+        return True
+
+    return False
+
+
 def db_creation_handler(c, conn):
     c.execute("DROP DATABASE IF EXISTS Football")
     c.execute("CREATE DATABASE Football")
