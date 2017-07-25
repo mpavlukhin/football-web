@@ -496,6 +496,9 @@
                       .append(tr)
                       .trigger("update");
                 }
+
+                // Fix href losers bug
+                addHrefToPlayersRows()
             }
 
             this.construct = function(settings) {

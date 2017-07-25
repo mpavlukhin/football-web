@@ -73,8 +73,16 @@ def get_stats(start_date, end_date):
     players_stats = list(list(player_stats) for player_stats in players_stats)
 
     for player_stats in players_stats:
-        player_stats.append(getPlayerFormfForLastTwoYears(int(player_stats[0])))
-        player_stats.append(getPlayerCoefForCurrentYear(int(player_stats[0])))
+        player_form_for_last_two_years = getPlayerFormForLastTwoYears(int(player_stats[0]))
+        if player_form_for_last_two_years == 0:
+            player_form_for_last_two_years = '-'
+        player_stats.append(player_form_for_last_two_years)
+
+        player_coef_for_current_year = getPlayerCoefForCurrentYear(int(player_stats[0]))
+        if player_coef_for_current_year == 0:
+            player_coef_for_current_year = '-'
+        player_stats.append(player_coef_for_current_year)
+
         del player_stats[0]
 
     players_stats_lists = [[]]
@@ -152,7 +160,7 @@ def get_player_id_by_name(player_name):
     return player_id
 
 
-def getPlayerFormfForLastTwoYears(player_id):
+def getPlayerFormForLastTwoYears(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from MappingPlayersSoccerGames MPSG " 
