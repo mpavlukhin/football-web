@@ -12,6 +12,8 @@ import dbconnect as db
 
 from html5print import HTMLBeautifier
 
+from werkzeug.contrib.fixers import ProxyFix
+
 app = Flask(__name__)
 
 dataSheet = None
@@ -192,7 +194,19 @@ def index():
     return redirect(request_str)
 
 
-if __name__ == '__main__':
-    if not db.db_existence_checker('Football'):
+@app.before_first_request
+def check_db_existence():
+    if not db.db_existence_checker('yksc2nhvbiqhmiow'):
         db.create_db()
+
+
+@app.after_request
+def add_header(response):
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
+
+
+app.wsgi_app = ProxyFix(app.wsgi_app)
+if __name__ == '__main__':
     app.run()
