@@ -52,6 +52,41 @@ class ParserMain():
                             CONNECTION.autocommit("Inserting to Players")
         return playersList
 
+
+    def getAllGamesDates(self):
+        CURSOR, CONNECTION = db.connection()
+        datelist = []
+
+        for sheet in self.wb:
+            if ((len)(sheet.title) <= 4):
+                titledata = sheet.title
+                titleyear = (int)(titledata[-2:])
+                titlemonth = (int)(titledata.replace(' ', '')[:-2])
+                if (titleyear >= 14 or (titleyear >= 13 and titlemonth > 3)):
+                    for cell in sheet[1]:
+                        if(cell.value == 'Оплата'):
+                            break
+                        if(type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != None
+                           and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != 'нэбыло'):
+                            datelist.append(cell)
+                            DATESLIST.append(cell.value)
+                            CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
+                            CONNECTION.autocommit("Add dates to SoccerGameDate")
+                else:
+                    for cell in sheet['B']:
+                        if(cell.value == "дата"):
+                            startcell = cell
+                            break
+                    for cell in sheet[startcell.row]:
+                        if(cell.value == 'Оплата'):
+                            break
+                        if (type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row - 1)].value != None):
+                            datelist.append(cell)
+                            DATESLIST.append(cell.value)
+                            CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
+                            CONNECTION.autocommit("Add dates to SoccerGameDate")
+        return datelist
+
     def getPlayersFromSheet(self, sheet):
         playersRange = []
         titledata = sheet.title
@@ -253,6 +288,7 @@ def getAllPlayersStats(filepath):
     db.recreateDB()
     P = ParserMain(filepath)
     P.getPlayersList()
+    P.getAllGamesDates()
     for sheet in P.wb:
         if ((len)(sheet.title) <= 4):
             titledata = sheet.title
@@ -272,9 +308,12 @@ def getAllPlayersStats(filepath):
 def updatePlayersStats(filepath):
     P = ParserMain(filepath)
     P.getPlayersList()
+    P.getAllGamesDates()
     for sheet in P.wb:
         if ((len)(sheet.title) <= 4):
             Parser = ParserFirstRange(filepath)
             Parser.run(sheet)
             print(sheet.title + " Complete!")
             break
+
+
