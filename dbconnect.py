@@ -2,17 +2,11 @@ import MySQLdb
 
 
 def connection(is_first=False):
-    conn = MySQLdb.connect(host="localhost",
-                           user = "root",
-                           passwd = "football64",
+    conn = MySQLdb.connect(host="e7qyahb3d90mletd.chr7pe7iynqr.eu-west-1.rds.amazonaws.com",
+                           user="vqpq0re2r4unjcpm",
+                           passwd="mu7nnhusacy3zijr",
+                           db='yksc2nhvbiqhmiow',
                            charset='utf8')
-
-    if not is_first:
-        conn = MySQLdb.connect(host="localhost",
-                               user="root",
-                               passwd="football64",
-                               db='Football',
-                               charset='utf8')
 
     c = conn.cursor()
 
@@ -21,26 +15,39 @@ def connection(is_first=False):
 
 def db_existence_checker(db_name):
     c, conn = connection(True)
-    cmd_check_existence = 'SELECT SCHEMA_NAME ' \
-                          'FROM INFORMATION_SCHEMA.SCHEMATA ' \
-                          'WHERE SCHEMA_NAME = "{:s}"'.format(db_name)
+
+    cmd_use_db = 'USE {:s}'.format(db_name)
+
+    c.execute(cmd_use_db)
+
+    cmd_check_existence = 'SHOW TABLES'
 
     c.execute(cmd_check_existence)
 
-    db_schema_name = c.fetchone()
+    db_any_table_name = c.fetchone()
 
-    if db_schema_name is not None:
+    if db_any_table_name is not None:
         return True
 
     return False
 
 
+def db_cleaner(c, conn):
+    # 'drop' database Football
+    c.execute("DROP TABLE WebServiceUsers")
+    c.execute("DROP TABLE MappingPlayersSoccerGames")
+    c.execute("SET FOREIGN_KEY_CHECKS = 0")
+    c.execute("DROP TABLE SoccerGames")
+    c.execute("DROP TABLE Players")
+    c.execute("SET FOREIGN_KEY_CHECKS = 1")
+
+
 def db_creation_handler(c, conn):
-    c.execute("DROP DATABASE IF EXISTS Football")
-    c.execute("CREATE DATABASE Football")
-    c.execute("USE Football")
-    c.execute(
-        "CREATE TABLE `Players` (	`PlayerID` int NOT NULL AUTO_INCREMENT,	`PlayerName` varchar(20) NOT NULL UNIQUE,PRIMARY KEY (`PlayerID`));")
+    c.execute("CREATE TABLE `Players` ("
+              "`PlayerID` int NOT NULL AUTO_INCREMENT,"
+              "`PlayerName` varchar(20) NOT NULL UNIQUE,"
+              "PRIMARY KEY (`PlayerID`));")
+    
     c.execute("CREATE TABLE `SoccerGames` ("
               "`SoccerGameID` int NOT NULL AUTO_INCREMENT,"
               "`SoccerGameDate` DATE NOT NULL UNIQUE,"
@@ -70,13 +77,14 @@ def db_creation_handler(c, conn):
 
 
 def create_db():
-    c, conn = connection(True)
+    c, conn = connection()
     db_creation_handler(c, conn)
     print("Database successfully created!")
 
 
 def recreateDB():
     c, conn = connection()
+    db_cleaner(c, conn)
     db_creation_handler(c, conn)
     print("Database successfully recreated!")
 
