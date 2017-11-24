@@ -1,1 +1,1 @@
-web: gunicorn app:app -w 4 t 1800
+web: gunicorn app:app -w 4 -t 1800
