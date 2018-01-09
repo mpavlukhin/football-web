@@ -197,7 +197,7 @@ def index():
 
 @app.before_first_request
 def check_db_existence():
-    if not db.db_existence_checker('Football'):
+    if not db.db_existence_checker('yksc2nhvbiqhmiow'):
         db.create_db()
 
 
