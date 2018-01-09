@@ -22,6 +22,11 @@ table.tablesorter, .tablesorter th, .tablesorter td {
     cursor: pointer;
 }
 
+.actualdate {
+    padding: 5%;
+
+}
+
 .tablesorter tr:nth-child(odd)    { background-color:#eee; }
 .tablesorter tr:nth-child(even)   { background-color:#fff; }
 

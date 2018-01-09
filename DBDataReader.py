@@ -73,7 +73,7 @@ def get_stats(start_date, end_date):
     players_stats = list(list(player_stats) for player_stats in players_stats)
 
     for player_stats in players_stats:
-        player_form_for_last_two_years = getPlayerFormForLastTwoYears(int(player_stats[0]))
+        player_form_for_last_two_years = get_player_form_for_last_three_years(int(player_stats[0]))
         if player_form_for_last_two_years == 0:
             player_form_for_last_two_years = '-'
         player_stats.append(player_form_for_last_two_years)
@@ -160,11 +160,11 @@ def get_player_id_by_name(player_name):
     return player_id
 
 
-def getPlayerFormForLastTwoYears(player_id):
+def get_player_form_for_last_three_years(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from MappingPlayersSoccerGames MPSG " 
-                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 1 YEAR) "
+                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 2 YEAR) "
                 "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
     c.execute("SELECT COUNT(*) FROM  PlayerStatsForTwoYears; ")
     playercountgames = c.fetchone()
@@ -208,6 +208,12 @@ def getPlayerCoefForCurrentYear(player_id):
     return totalscore
 
 
+def get_actual_date_from_database():
+    c, conn = db.connection()
+    c.execute("SELECT  max(SoccerGameDate) FROM soccergames;")
+    actual_date = c.fetchone()[0]
+    return actual_date
+
 def getPlayerAchievements(player_id):
     c, conn = db.connection()
     playerachievments = []
@@ -237,6 +243,7 @@ def getPlayerAchievements(player_id):
                 "order by COUNT(GameStatus) DESC " \
                 "LIMIT 1;")
     c.execute("SELECT PlayerName FROM PlayerMaxPoints;")
+
     maxWinsPlayerName = c.fetchall()[0]
     maxWinsPlayerName = maxWinsPlayerName[0]
 
@@ -248,8 +255,6 @@ def getPlayerAchievements(player_id):
 
 
     return  playerachievments
-
-
 
 
 

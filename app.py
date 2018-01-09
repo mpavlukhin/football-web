@@ -114,6 +114,7 @@ def get_stats_table():
             ((start_date_year == end_date_year) and (start_date_month > end_date_month)):
         request_str = get_default_request_string()
         return render_template('error.html', request_string=request_str), 400
+    actual_date = dbr.get_actual_date_from_database()
 
     now = dt.datetime.now()
     years = list(range(2011, now.year + 1))
@@ -124,7 +125,7 @@ def get_stats_table():
     if (re.match('[\d][\d]/[\d][\d][\d][\d]', start) is not None) \
             and (re.match('[\d][\d]/[\d][\d][\d][\d]', end) is not None):
         return HTMLBeautifier.beautify(render_template('table.html', table=table_html, years=years, start=start, end=end,
-                           last_player_before_losers=last_player_before_losers, source_file=FILELINK), 4)
+                           last_player_before_losers=last_player_before_losers, actual_date=actual_date, source_file=FILELINK), 4)
 
 
 @app.route("/stats", methods=['POST'])
@@ -196,7 +197,7 @@ def index():
 
 @app.before_first_request
 def check_db_existence():
-    if not db.db_existence_checker('yksc2nhvbiqhmiow'):
+    if not db.db_existence_checker('Football'):
         db.create_db()
 
 
