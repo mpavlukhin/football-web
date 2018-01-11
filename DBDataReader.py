@@ -244,14 +244,14 @@ def getPlayerAchievements(player_id):
                 "LIMIT 1;")
     c.execute("SELECT PlayerName FROM PlayerMaxPoints;")
 
-    maxWinsPlayerName = c.fetchall()[0]
-    maxWinsPlayerName = maxWinsPlayerName[0]
+    # maxWinsPlayerName = c.fetchall()[0]
+    # maxWinsPlayerName = maxWinsPlayerName[0]
 
     playerachievments.append(totalGamesForCurrentYear[0])
     playerachievments.append(totalWinsForCurrentYear[0])
     playerachievments.append(totalGames[0])
     playerachievments.append(totalWins[0])
-    playerachievments.append(maxWinsPlayerName)
+    # playerachievments.append(maxWinsPlayerName)
 
 
     return  playerachievments
