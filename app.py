@@ -10,11 +10,16 @@ import re
 
 import dbconnect as db
 
+import requests
+
 from html5print import HTMLBeautifier
 
 from werkzeug.contrib.fixers import ProxyFix
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 app = Flask(__name__)
+sched = BackgroundScheduler()
 
 dataSheet = None
 data = None
@@ -207,7 +212,13 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
+    
+@sched.scheduled_job('interval', minutes=29)
+def web_proc_anti_sleep_handler():
+    r = requests.get('https://football-web.herokuapp.com/', timeout=20)
+   
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
+    sched.start()
     app.run()

@@ -1,3 +1,4 @@
+APScheduler==3.5.0
 beautifulsoup4==4.6.0
 certifi==2017.4.17
 chardet==3.0.4
@@ -30,8 +31,10 @@ requests==2.18.1
 rsa==3.4.2
 six==1.10.0
 slimit==0.8.1
-tinycss2==0.5
+tinycss2==0.5i
+tzlocal==1.5.1
 uritemplate==3.0.0
 urllib3==1.21.1
 webencodings==0.5.1
 Werkzeug==0.12.2
+
