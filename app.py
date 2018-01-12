@@ -19,7 +19,9 @@ from werkzeug.contrib.fixers import ProxyFix
 from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
+
 sched = BackgroundScheduler()
+sched.start()
 
 dataSheet = None
 data = None
@@ -220,5 +222,4 @@ def web_proc_anti_sleep_handler():
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
-    sched.start()
     app.run()
