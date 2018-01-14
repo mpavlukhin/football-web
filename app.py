@@ -172,6 +172,11 @@ def how_it_calc_page():
     return render_template('howitcalc.html')
 
 
+@app.route("/refresh")
+def refresh_heroku_dynos():
+    return "Heroku Anti Sleep page, yeah!"
+
+
 @app.errorhandler(500)
 def page_not_found(e):
     request_str = get_default_request_string()
@@ -217,7 +222,7 @@ def add_header(response):
     
 @sched.scheduled_job('interval', minutes=29)
 def web_proc_anti_sleep_handler():
-    r = requests.get('https://football-web.herokuapp.com/', timeout=20)
+    r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
    
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
