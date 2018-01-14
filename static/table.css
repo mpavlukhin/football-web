@@ -24,7 +24,7 @@ table.tablesorter, .tablesorter th, .tablesorter td {
 
 .actualdate {
     padding: 5%;
-
+    color: #777;
 }
 
 .tablesorter tr:nth-child(odd)    { background-color:#eee; }
