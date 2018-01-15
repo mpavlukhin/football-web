@@ -220,7 +220,7 @@ def add_header(response):
     return response
 
     
-@sched.scheduled_job('interval', minutes=29)
+@sched.scheduled_job('interval', minutes=20)
 def web_proc_anti_sleep_handler():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
    
