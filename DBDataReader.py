@@ -73,7 +73,7 @@ def get_stats(start_date, end_date):
     players_stats = list(list(player_stats) for player_stats in players_stats)
 
     for player_stats in players_stats:
-        player_form_for_last_two_years = get_player_form_for_last_three_years(int(player_stats[0]))
+        player_form_for_last_two_years = get_player_form_for_last_two_years(int(player_stats[0]))
         if player_form_for_last_two_years == 0:
             player_form_for_last_two_years = '-'
         player_stats.append(player_form_for_last_two_years)
@@ -160,15 +160,15 @@ def get_player_id_by_name(player_name):
     return player_id
 
 
-def get_player_form_for_last_three_years(player_id):
+def get_player_form_for_last_two_years(player_id):
     c, conn = db.connection()
     c.execute("CREATE OR REPLACE VIEW PlayerStatsForTwoYears AS "
                 "SELECT SG.SoccerGameDate AS 'Дата игры', MPSG.Points AS 'Очки' from MappingPlayersSoccerGames MPSG " 
-                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 2 YEAR) "
+                "JOIN SoccerGames SG Where SG.SoccerGameId = MPSG.SoccerGameID AND PlayerID = {0} AND YEAR(SG.SoccerGameDate) >= YEAR(CURDATE() - INTERVAL 1 YEAR) "
                 "ORDER BY SG.SoccerGameDate DESC;".format(player_id))
     c.execute("SELECT COUNT(*) FROM  PlayerStatsForTwoYears; ")
     playercountgames = c.fetchone()
-    if(playercountgames[0] >= 20):
+    if(playercountgames[0] >= 10):
         c.execute("SELECT * FROM PlayerStatsForTwoYears "
                   "LIMIT 20; ")
         playergames = c.fetchall()
