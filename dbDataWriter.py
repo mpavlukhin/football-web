@@ -26,7 +26,7 @@ GLOBALDATEINDEX = 1
 # Понять как сделать обшую функцию для расчета статистики на текущей странице
 #
 class ParserMain():
-    def getPlayersList(self):
+    def getPlayersList(self, lastpage):
         CURSOR, CONNECTION = db.connection()
         playersList = []
         column = 'B'
@@ -50,10 +50,12 @@ class ParserMain():
                             playersList.append(cell)
                             CURSOR.execute("INSERT IGNORE Players(PlayerName) VALUES('{0}')".format(cell.value))
                             CONNECTION.autocommit("Inserting to Players")
+            if lastpage:
+                break
         return playersList
 
 
-    def getAllGamesDates(self):
+    def getAllGamesDates(self, lastpage):
         CURSOR, CONNECTION = db.connection()
         datelist = []
 
@@ -72,6 +74,8 @@ class ParserMain():
                             DATESLIST.append(cell.value)
                             CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
                             CONNECTION.autocommit("Add dates to SoccerGameDate")
+                if lastpage:
+                    return
                 else:
                     for cell in sheet['B']:
                         if(cell.value == "дата"):
@@ -86,6 +90,7 @@ class ParserMain():
                             CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
                             CONNECTION.autocommit("Add dates to SoccerGameDate")
         return datelist
+
 
     def getPlayersFromSheet(self, sheet):
         playersRange = []
@@ -174,11 +179,15 @@ class ParserMain():
                     elif (team1score == team2score and team2score == team3score):
                         playerscore = 1
                         playerresult = 'D'
-                playerindex = PLAYERSLIST.index(playercell.value) + 1
-                gamedateindex = DATESLIST.index(datecell.value) + 1
+                # playerindex = PLAYERSLIST.index(playercell.value) + 1
+                # gamedateindex = DATESLIST.index(datecell.value) + 1
+                CURSOR.execute("SELECT PlayerID FROM Players WHERE PlayerName = '{0}';".format(playercell.value))
+                player_id = CURSOR.fetchone()
+                CURSOR.execute("SELECT SoccerGameID from soccergames WHERE SoccerGameDate = '{0}';".format(datecell.value))
+                game_date_id = CURSOR.fetchone()
                 CURSOR.execute(
                     "INSERT IGNORE INTO MappingPlayersSoccerGames VALUES ( {0}, {1}, {2}, '{3}')".format(
-                        playerindex, gamedateindex,
+                        player_id[0], game_date_id[0],
                         playerscore
                         , playerresult))
                 CONNECTION.autocommit("Inserting to MappingPlayers")
@@ -241,7 +250,7 @@ class ParserFirstRange(ParserMain):
         CONNECTION.autocommit('Delete ofrom MPSG one row')
 
 
-    def run(self, sheet):
+    def run(self, sheet, lastpage):
         self.getPlayersStats(sheet, self.getGamesDates(sheet), self.getPlayersFromSheet(sheet),
                              self.getGamesScores(sheet))
 
@@ -287,8 +296,8 @@ class ParserSecondRange(ParserMain):
 def getAllPlayersStats(filepath):
     db.recreateDB()
     P = ParserMain(filepath)
-    P.getPlayersList()
-    P.getAllGamesDates()
+    P.getPlayersList(lastpage=False)
+    P.getAllGamesDates(lastpage=False)
     for sheet in P.wb:
         if ((len)(sheet.title) <= 4):
             titledata = sheet.title
@@ -296,7 +305,7 @@ def getAllPlayersStats(filepath):
             titlemonth = (int)(titledata.replace(' ', '')[:-2])
             if (titleyear >= 14 or (titleyear >= 13 and titlemonth > 3)):
                 Parser = ParserFirstRange(filepath)
-                Parser.run(sheet)
+                Parser.run(sheet, lastpage=False)
                 print(titledata + ' Complete!')
             else:
                 Parser = ParserSecondRange(filepath)
@@ -307,13 +316,11 @@ def getAllPlayersStats(filepath):
 # This function will get info only from last list
 def updatePlayersStats(filepath):
     P = ParserMain(filepath)
-    P.getPlayersList()
-    P.getAllGamesDates()
+    P.getPlayersList(lastpage=True)
+    P.getAllGamesDates(lastpage=True)
     for sheet in P.wb:
         if ((len)(sheet.title) <= 4):
             Parser = ParserFirstRange(filepath)
-            Parser.run(sheet)
+            Parser.run(sheet, lastpage=True)
             print(sheet.title + " Complete!")
             break
-
-
