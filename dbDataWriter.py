@@ -74,8 +74,6 @@ class ParserMain():
                             DATESLIST.append(cell.value)
                             CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
                             CONNECTION.autocommit("Add dates to SoccerGameDate")
-                if lastpage:
-                    return
                 else:
                     for cell in sheet['B']:
                         if(cell.value == "дата"):
