@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Страница аутентификации</title>
@@ -16,6 +16,7 @@
 </head>
 <body>
 <div align="center">
+<h2>Для изменения данных введите логин и пароль</h2>
 <form class="form-horizontal" method = "post" style="width:500px; margin-top: 50px;">
 
   <div class="form-group">
@@ -32,17 +33,6 @@
     </div>
   </div>
 
-  <div class="form-group" style="margin-top: 50px;">
-    <h4 style="padding-left: 17%;">Код из окна перенаправления</h4>
-      <label class="col-sm-2 control-label">Код</label>
-    <div class="col-sm-10">
-      <input type="text" width="40px" class="form-control" name ="code" size="100px">
-        <h3><p class="bg-danger">
-        {{ message }}
-        </p></h3>
-    </div>
-  </div>
-
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-primary" style="padding: 6px 190px;">Вход</button>
@@ -50,17 +40,5 @@
   </div>
 </form>
 </div>
-
-<script>
-    var encodedStr = '{{google_auth_link}}';
-
-    var parser = new DOMParser;
-    var dom = parser.parseFromString(
-        '<!doctype html><body>' + encodedStr,
-        'text/html');
-    var decodedString = dom.body.textContent;
-    window.open(decodedString);
-
-</script>
 </body>
 </html>

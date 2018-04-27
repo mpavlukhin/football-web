@@ -1,21 +1,14 @@
 from flask import Flask, render_template, redirect, request
 import spreadsheetdriveapi as drive
-
 import DBDataReader as dbr
 import dbDataWriter as dbw
-
+import urllib.request
 import datetime as dt
-
 import re
-
 import dbconnect as db
-
 import requests
-
 from html5print import HTMLBeautifier
-
 from werkzeug.contrib.fixers import ProxyFix
-
 from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
@@ -38,21 +31,14 @@ def get_default_request_string():
 
     return request_str
 
-
-def google_authentication_init():
-    global GAUTH
-    GAUTH = drive.google_auth_init()
-
-
 def admin_form_requester():
     login = request.form['login']
     password = request.form['password']
-    code = request.form['code']
 
-    return login, password, code
+    return login, password
 
 
-def admin_form_checker(login, password, code):
+def admin_form_checker(login, password):
     user_lists = db.getWebServiceUsers()
 
     for user in user_lists:
@@ -66,40 +52,34 @@ def admin_form_checker(login, password, code):
 
 @app.route("/update")
 def login_in_update():
-    google_authentication_init()
-    google_authentication_redirect = GAUTH.GetAuthUrl()
-    return render_template('auth.html', google_auth_link=google_authentication_redirect)
+    return render_template('auth.html')
 
 
 @app.route("/update", methods=['POST'])
 def get_login_info_update():
     global data, dataSheet, GAUTH
 
-    login, password, code = admin_form_requester()
-    drive.oauth_authenticate(GAUTH, code)
+    login, password = admin_form_requester()
+    urllib.request.urlretrieve(FILELINK, 'Football-bigdata-v0.2.xlsx')
 
-    if admin_form_checker(login, password, code):
-        dataSheet = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
+    if admin_form_checker(login, password):
         data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
         return redirect("/stats")
 
 
 @app.route("/create")
 def login_in_create():
-    google_authentication_init()
-    google_authentication_redirect = GAUTH.GetAuthUrl()
-    return render_template('auth.html', google_auth_link=google_authentication_redirect)
+    return render_template('auth.html')
 
 
 @app.route("/create", methods=['POST'])
 def get_login_info():
     global data, dataSheet, GAUTH
 
-    login, password, code = admin_form_requester()
-    drive.oauth_authenticate(GAUTH, code)
+    login, password = admin_form_requester()
+    urllib.request.urlretrieve(FILELINK, 'Football-bigdata-v0.2.xlsx')
 
-    if admin_form_checker(login, password, code):
-        dataSheet = drive.downloadxlsx('Football-bigdata-v0.2', GAUTH)
+    if admin_form_checker(login, password):
         data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
         return redirect("/stats")
 
@@ -209,7 +189,7 @@ def index():
 
 @app.before_first_request
 def check_db_existence():
-    if not db.db_existence_checker('yksc2nhvbiqhmiow'):
+    if not db.db_existence_checker('football'):
         db.create_db()
 
 
