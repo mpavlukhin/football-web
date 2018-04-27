@@ -508,10 +508,9 @@
                           .append(tr)
                           .trigger("update");
                     }
-
-                    // Fix href losers bug
-                    addHrefToPlayersRows()
                 }
+
+                addHrefToPlayersRows()
             }
 
             this.construct = function(settings) {
