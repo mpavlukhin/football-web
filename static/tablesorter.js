@@ -471,34 +471,47 @@
                 var tableBody = table.tBodies[0];
                 var trs = tableBody.getElementsByTagName('tr');
 
-                var stack = [];
+                var isAllLosers = true;
                 for (let i = trs.length - 1; i >= 0; i--) {
                     trs[i].removeAttribute("style");
                     tds = trs[i].getElementsByTagName('td');
-                    if (tds[4].innerHTML < 10)
+                    if (tds[4].innerHTML >= 10)
                     {
-                        var trToInsert = document.createElement('tr');
-                        trToInsert.innerHTML = trs[i].innerHTML;
-                        stack.push(trToInsert);
-
-                        $(trs[i])
-                            .remove()
-                            .trigger("update");
+                        isAllLosers = false;
+                        break
                     }
                 }
 
-                trs[trs.length - 1].setAttribute("style", "border-bottom: solid #0761ff;");
+                if (!isAllLosers) {
+                    var stack = [];
+                    for (let i = trs.length - 1; i >= 0; i--) {
+                        trs[i].removeAttribute("style");
+                        tds = trs[i].getElementsByTagName('td');
+                        if (tds[4].innerHTML < 10)
+                        {
+                            var trToInsert = document.createElement('tr');
+                            trToInsert.innerHTML = trs[i].innerHTML;
+                            stack.push(trToInsert);
 
-                var tr;
-                while(tr = stack.pop())
-                {
-                    $(table)
-                      .append(tr)
-                      .trigger("update");
+                            $(trs[i])
+                                .remove()
+                                .trigger("update");
+                        }
+                    }
+
+                    trs[trs.length - 1].setAttribute("style", "border-bottom: solid #0761ff;");
+
+                    var tr;
+                    while(tr = stack.pop())
+                    {
+                        $(table)
+                          .append(tr)
+                          .trigger("update");
+                    }
+
+                    // Fix href losers bug
+                    addHrefToPlayersRows()
                 }
-
-                // Fix href losers bug
-                addHrefToPlayersRows()
             }
 
             this.construct = function(settings) {
