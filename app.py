@@ -201,7 +201,7 @@ def add_header(response):
 
     
 @sched.scheduled_job('interval', minutes=20)
-def web_proc_anti_sleep_handler():
+def web_proc_anti_sleep_handler_and_update():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
 
     file_old = 'data/spreadsheets/Football-bigdata-v0.2-old.xlsx'
@@ -212,10 +212,12 @@ def web_proc_anti_sleep_handler():
 
     if not filecmp.cmp(file_old, file_new):
         dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        print('Statistics was updated')
+
+    else:
+        print('Nothing to update')
 
     os.remove(file_old)
-
-   
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
