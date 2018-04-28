@@ -60,7 +60,7 @@ def get_login_info_update():
     global data, dataSheet, GAUTH
 
     login, password = admin_form_requester()
-    urllib.request.urlretrieve(FILELINK, 'Football-bigdata-v0.2.xlsx')
+    urllib.request.urlretrieve(FILELINK, 'data/spreadsheets/Football-bigdata-v0.2.xlsx')
 
     if admin_form_checker(login, password):
         data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
@@ -77,7 +77,7 @@ def get_login_info():
     global data, dataSheet, GAUTH
 
     login, password = admin_form_requester()
-    urllib.request.urlretrieve(FILELINK, 'Football-bigdata-v0.2.xlsx')
+    urllib.request.urlretrieve(FILELINK, 'data/spreadsheets/Football-bigdata-v0.2.xlsx')
 
     if admin_form_checker(login, password):
         data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
@@ -203,6 +203,18 @@ def add_header(response):
 @sched.scheduled_job('interval', minutes=20)
 def web_proc_anti_sleep_handler():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
+
+    file_old = 'data/spreadsheets/Football-bigdata-v0.2-old.xlsx'
+    file_new = 'data/spreadsheets/Football-bigdata-v0.2.xlsx'
+
+    os.rename(file_new, file_old)
+    urllib.request.urlretrieve(FILELINK, file_new)
+
+    if not filecmp.cmp(file_old, file_new):
+        dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+
+    os.remove(file_old)
+
    
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
