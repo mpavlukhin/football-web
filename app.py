@@ -9,6 +9,7 @@ import dbconnect as db
 import requests
 import os
 import filecmp
+import spreadsheet as ss
 from html5print import HTMLBeautifier
 from werkzeug.contrib.fixers import ProxyFix
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -21,8 +22,8 @@ sched.start()
 dataSheet = None
 data = None
 
-FILELINK = 'https://docs.google.com/spreadsheets/d/1QH-AFYHk3lXJf-dG3FzhDwtO6iJZus7ZXWoY8aBs7ZI/edit#gid=1350957595'
 GAUTH = None
+FILELINK = 'https://docs.google.com/spreadsheets/d/1QH-AFYHk3lXJf-dG3FzhDwtO6iJZus7ZXWoY8aBs7ZI/edit?usp=sharing'
 
 
 def get_default_request_string():
@@ -62,7 +63,7 @@ def get_login_info_update():
     global data, dataSheet, GAUTH
 
     login, password = admin_form_requester()
-    urllib.request.urlretrieve(FILELINK, 'data/spreadsheets/Football-bigdata-v0.2.xlsx')
+    ss.download_sheet()
 
     if admin_form_checker(login, password):
         data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
@@ -79,7 +80,7 @@ def get_login_info():
     global data, dataSheet, GAUTH
 
     login, password = admin_form_requester()
-    urllib.request.urlretrieve(FILELINK, 'data/spreadsheets/Football-bigdata-v0.2.xlsx')
+    ss.download_sheet()
 
     if admin_form_checker(login, password):
         data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
@@ -88,6 +89,8 @@ def get_login_info():
 
 @app.route('/stats')
 def get_stats_table():
+    global FILELINK
+
     try:
         start = (request.args['start'])
         end = (request.args['end'])
@@ -113,8 +116,9 @@ def get_stats_table():
 
     if (re.match('[\d][\d]/[\d][\d][\d][\d]', start) is not None) \
             and (re.match('[\d][\d]/[\d][\d][\d][\d]', end) is not None):
-        return HTMLBeautifier.beautify(render_template('table.html', table=table_html, years=years, start=start, end=end,
-                           last_player_before_losers=last_player_before_losers, actual_date=actual_date, source_file=FILELINK), 4)
+        return HTMLBeautifier.beautify(render_template('table.html', table=table_html, years=years, start=start,
+                                                       end=end, last_player_before_losers=last_player_before_losers,
+                                                       actual_date=actual_date, source_file=FILELINK), 4)
 
 
 @app.route("/stats", methods=['POST'])
@@ -146,7 +150,8 @@ def get_player_stats():
     player_achievments = dbr.getPlayerAchievements(player_id)
     table_html = dataDB.to_html(classes='playertable')
     table_html = re.sub('dataframe ', '', table_html)
-    return render_template('playerstat.html', table=table_html, player_name=player_name, playerachievments= player_achievments)
+    return render_template('playerstat.html', table=table_html, player_name=player_name,
+                           playerachievments= player_achievments)
 
 
 @app.route("/howitcalc")
@@ -210,10 +215,10 @@ def web_proc_anti_sleep_handler_and_update():
     file_new = 'data/spreadsheets/Football-bigdata-v0.2.xlsx'
 
     os.rename(file_new, file_old)
-    urllib.request.urlretrieve(FILELINK, file_new)
+    ss.download_sheet(file_name=file_new)
 
     if not filecmp.cmp(file_old, file_new):
-        dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        dbw.updatePlayersStats(file_new)
         print('Statistics was updated')
 
     else:
