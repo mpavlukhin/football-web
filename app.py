@@ -1,14 +1,11 @@
 from flask import Flask, render_template, redirect, request
-import spreadsheetdriveapi as drive
 import DBDataReader as dbr
 import dbDataWriter as dbw
-import urllib.request
 import datetime as dt
 import re
 import dbconnect as db
 import requests
 import os
-import filecmp
 import spreadsheet as ss
 from html5print import HTMLBeautifier
 from werkzeug.contrib.fixers import ProxyFix
@@ -22,7 +19,6 @@ sched.start()
 dataSheet = None
 data = None
 
-GAUTH = None
 FILELINK = 'https://docs.google.com/spreadsheets/d/1QH-AFYHk3lXJf-dG3FzhDwtO6iJZus7ZXWoY8aBs7ZI/edit?usp=sharing'
 
 
@@ -60,7 +56,7 @@ def login_in_update():
 
 @app.route("/update", methods=['POST'])
 def get_login_info_update():
-    global data, dataSheet, GAUTH
+    global data, dataSheet
 
     login, password = admin_form_requester()
     ss.download_sheet()
@@ -77,7 +73,7 @@ def login_in_create():
 
 @app.route("/create", methods=['POST'])
 def get_login_info():
-    global data, dataSheet, GAUTH
+    global data, dataSheet
 
     login, password = admin_form_requester()
     ss.download_sheet()
@@ -211,13 +207,14 @@ def add_header(response):
 def web_proc_anti_sleep_handler_and_update():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
 
-    file_old = 'data/spreadsheets/Football-bigdata-v0.2-old.xlsx'
-    file_new = 'data/spreadsheets/Football-bigdata-v0.2.xlsx'
+    abs_path = os.path.abspath('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+    file_old = abs_path + '.old'
+    file_new = abs_path
 
     os.rename(file_new, file_old)
     ss.download_sheet(file_name=file_new)
 
-    if not filecmp.cmp(file_old, file_new):
+    if not ss.diff_xlsx(file_old, file_new):
         dbw.updatePlayersStats(file_new)
         print('Statistics was updated')
 
