@@ -27,9 +27,14 @@ table.playertable, .playertable th, .playertable td {
     text-shadow: white 0 0 4px;
 
  }
+
 .playertable th {
     background-color: #327dff;
     color: white;
+}
+
+.playertable tbody tr th {
+    width: 50px;
 }
 
 .playertable tr:nth-child(odd)    { background-color:#eee; }
