@@ -207,7 +207,7 @@ def add_header(response):
 def web_proc_anti_sleep_handler_and_update():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
 
-    abs_path = os.path.abspath('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+    abs_path = os.path.abspath("data/spreadsheets/Football-bigdata-v0.2.xlsx")
     file_old = abs_path + '.old'
     file_new = abs_path
 
