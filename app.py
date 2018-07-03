@@ -187,7 +187,14 @@ def page_not_found(e):
 @app.route("/")
 def index():
     request_str = get_default_request_string()
-    return redirect(request_str)
+    #return redirect(request_str)
+    return render_template('sadsanya.html')
+
+
+@app.route("/error")
+def get_error_page():
+    return render_template('sadsanya.html')
+
 
 
 @app.before_first_request
