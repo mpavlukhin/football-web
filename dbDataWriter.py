@@ -15,310 +15,298 @@ GREENCOLOR2 = 'FF38761D'
 GREENCOLOR3 = 'FF274E13'
 PURPLECOLOR = 'FF9900FF'
 
-DATESLIST = []
-PLAYERSLIST = []
+GLOBAL_DATES_LIST = []
+GLOBAL_PLAYERS_LIST = []
 
-GLOBALPLAYERINDEX = 1
-GLOBALDATEINDEX = 1
+GLOBAL_PLAYER_INDEX = 1
+GLOBAL_DATE_INDEX = 1
 
-# CURSOR, CONNECTION = db.connection()
-# Заинсертить все имена и все даты как-то, после чего брать из списков DATELIST и PLAYERLIST по id (index + 1)
-# Понять как сделать обшую функцию для расчета статистики на текущей странице
-#
-class ParserMain():
-    def getPlayersList(self, lastpage):
-        CURSOR, CONNECTION = db.connection()
-        playersList = []
+
+class ParserMain:
+    cursor, connection = db.connection()
+
+    def __init__(self, file_path):
+        self.file = file_path
+        self.wb = pyxl.load_workbook(file_path, data_only=True)
+
+    @staticmethod
+    def get_data_from_sheet(sheet):
+        sheet_title_data = sheet.title
+        title_year = int(sheet_title_data[-2:])
+        title_month = str(sheet_title_data.replace(' ', '')[:-2])
+        return title_year, title_month
+
+    def get_player_list(self, lastpage):
+        players_list = []
         column = 'B'
         for sheet in self.wb:
-            if((len)(sheet.title) <= 4):
-                titledata = sheet.title
-                titleyear = (int)(titledata[-2:])
-                if(titleyear >= 14):
+            if len(sheet.title) <= 4:
+                title_year, title_month = self.get_data_from_sheet(sheet)
+                if title_year >= 14:
                     column = 'A'
                 else:
                     column = 'B'
                 for cell in sheet[column]:
-                    if (cell.value == None or cell.value == '' or (cell.value == 'Сумма' and cell.row > 5)
-                        or (cell.value == 'счет' and cell.row > 5)):
+                    if cell.value is None or cell.value == '' or\
+                            (cell.value == 'Сумма' and cell.row > 5 or
+                             (cell.value == 'счет' and cell.row > 5)):
                         break
-                    if(cell.value != 'Имя' and cell.value != 'счет' and cell.value != 'Сумма' and cell.value != 'Аренда'
-                         and cell.value != 'Guests ' and cell.value != '' and cell.value != 'дата'):
-                        playername = cell.value
-                        if(PLAYERSLIST.count(playername) == 0):
-                            PLAYERSLIST.append(playername)
-                            playersList.append(cell)
-                            CURSOR.execute("INSERT IGNORE Players(PlayerName) VALUES('{0}')".format(cell.value))
-                            CONNECTION.autocommit("Inserting to Players")
+                    if cell.value != 'Имя' and cell.value != 'счет' and cell.value != 'Сумма' and\
+                            cell.value != 'Аренда' and cell.value != 'Guests ' and cell.value != ''\
+                            and cell.value != 'дата':
+                        player_name = cell.value
+                        if GLOBAL_PLAYERS_LIST.count(player_name) == 0:
+                            GLOBAL_PLAYERS_LIST.append(player_name)
+                            players_list.append(cell)
+                            self.cursor.execute("INSERT IGNORE Players(PlayerName) VALUES('{0}')".format(cell.value))
+                            self.connection.autocommit("Inserting to Players")
             if lastpage:
                 break
-        return playersList
+        return players_list
 
-
-    def getAllGamesDates(self, lastpage):
-        CURSOR, CONNECTION = db.connection()
-        datelist = []
-
+    def get_all_games_dates(self):
+        date_list = []
         for sheet in self.wb:
-            if ((len)(sheet.title) <= 4):
-                titledata = sheet.title
-                titleyear = (int)(titledata[-2:])
-                titlemonth = (int)(titledata.replace(' ', '')[:-2])
-                if (titleyear >= 14 or (titleyear >= 13 and titlemonth > 3)):
+            if len(sheet.title) <= 4:
+                title_year, title_month = self.get_data_from_sheet(sheet)
+                if title_year >= 14 or (title_year >= 13 and title_month > 3):
                     for cell in sheet[1]:
-                        if(cell.value == 'Оплата'):
+                        if cell.value == 'Оплата':
                             break
-                        if(type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != None
-                           and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != 'нэбыло'):
-                            datelist.append(cell)
-                            DATESLIST.append(cell.value)
-                            CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
-                            CONNECTION.autocommit("Add dates to SoccerGameDate")
+                        if type(cell.value) is datetime and\
+                            sheet[str(cell.column) + str(cell.row + 1)].value is not None and\
+                                sheet[str(cell.column) + str(cell.row + 1)].value != 'нэбыло':
+                            date_list.append(cell)
+                            GLOBAL_DATES_LIST.append(cell.value)
+                            self.cursor.execute("INSERT IGNORE INTO SoccerGames "
+                                                "(SoccerGameDate) VALUES('{0}')".format(cell.value))
+                            self.connection.autocommit("Add dates to SoccerGameDate")
                 else:
                     for cell in sheet['B']:
-                        if(cell.value == "дата"):
-                            startcell = cell
+                        if cell.value == "дата":
+                            start_cell = cell
                             break
-                    for cell in sheet[startcell.row]:
-                        if(cell.value == 'Оплата'):
+                    for cell in sheet[start_cell.row]:
+                        if cell.value == 'Оплата':
                             break
-                        if (type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row - 1)].value != None):
-                            datelist.append(cell)
-                            DATESLIST.append(cell.value)
-                            CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
-                            CONNECTION.autocommit("Add dates to SoccerGameDate")
-        return datelist
+                        if type(cell.value) is datetime and\
+                                sheet[str(cell.column) + str(cell.row - 1)].value is not None:
+                            date_list.append(cell)
+                            GLOBAL_DATES_LIST.append(cell.value)
+                            self.cursor.execute("INSERT IGNORE INTO SoccerGames "
+                                           "(SoccerGameDate) VALUES('{0}')".format(cell.value))
+                            self.connection.autocommit("Add dates to SoccerGameDate")
+        return date_list
 
-
-    def getPlayersFromSheet(self, sheet):
-        playersRange = []
-        titledata = sheet.title
-        titleyear = (int)(titledata[-2:])
-        if (titleyear >= 14):
+    def get_players_from_sheet(self, sheet):
+        players_range = []
+        title_year, title_month = self.get_data_from_sheet(sheet)
+        if title_year >= 14:
             column = 'A'
         else:
             column = 'B'
         for cell in sheet[column]:
-            if (cell.value == None or cell.value == '' or (cell.value == 'Сумма' and cell.row > 5)
-                or (cell.value == 'счет' and cell.row > 5)):
+            if cell.value is None or cell.value == '' or\
+                (cell.value == 'Сумма' and cell.row > 5) or\
+                    (cell.value == 'счет' and cell.row > 5):
                 break
-            if (cell.value != 'Имя' and cell.value != 'счет' and cell.value != 'Сумма' and cell.value != 'Аренда'
-                and cell.value != 'Guests ' and cell.value != 'дата' and cell.value != 'счет'):
-                playersRange.append(cell)
-        return playersRange
+            if cell.value != 'Имя' and cell.value != 'счет' and\
+                cell.value != 'Сумма' and cell.value != 'Аренда' and\
+                    cell.value != 'Guests ' and cell.value != 'дата' and cell.value != 'счет':
+                players_range.append(cell)
+        return players_range
 
-
-    def getPlayersStats(self, sheet, datelist, playerslist, gamesscore):
-        CURSOR, CONNECTION = db.connection()
-
-        playerresult = 'L'
-        playerscore = 0
-        typeofgame = ''
+    def get_player_stats(self, sheet, date_list, players_list, games_score):
+        player_result = 'L'
+        player_score = 0
+        type_of_game = ''
         output = [[]]
         index = 0
-        for playercell in playerslist:
-            for datecell in datelist:
-                currentcell = sheet[(str)(datecell.column) + (str)(playercell.row)]
-                currentcellcolor = currentcell.fill.start_color.index
-                if(currentcellcolor == WHITECOLOR or currentcellcolor == WHITECOLOR2):
+        for player_cell in players_list:
+            for date_cell in date_list:
+                current_cell = sheet[str(date_cell.column) + (str)(player_cell.row)]
+                current_cell_color = current_cell.fill.start_color.index
+                if current_cell_color == WHITECOLOR or current_cell_color == WHITECOLOR2:
                     index += 1
                     continue
-                typeofgame = gamesscore[index]
-                currentscore = (str)(typeofgame[0])
-                gamecolor = typeofgame[1]
-                currentscore = currentscore.split('-')
+                type_of_game = games_score[index]
+                current_score = (str)(type_of_game[0])
+                game_color = type_of_game[1]
+                current_score = current_score.split('-')
                 # This cases for games with 2 teams
-                if(len(currentscore) == 2):
-                    team1score = (float)(currentscore[0])
-                    team2score = (float)(currentscore[1])
-                    if(team1score == team2score):
-                        playerresult = 'D'
-                        playerscore = 1
-                    elif(currentcellcolor == gamecolor):
-                        playerresult = 'W'
-                        playerscore = 3
+                if len(current_score) == 2:
+                    team1_score = float(current_score[0])
+                    team2_score = float(current_score[1])
+                    if team1_score == team2_score:
+                        player_result = 'D'
+                        player_score = 1
+                    elif current_cell_color == game_color:
+                        player_result = 'W'
+                        player_score = 3
                     else:
-                        playerresult = 'L'
-                        playerscore = 0
+                        player_result = 'L'
+                        player_score = 0
                 # This cases for games with 3 teams
-                elif(len(currentscore) == 3):
-                    team1score = (float)(currentscore[0])
-                    team2score = (float)(currentscore[1])
-                    team3score = (float)(currentscore[2])
+                elif len(current_score) == 3:
+                    team1_score = float(current_score[0])
+                    team2_score = float(current_score[1])
+                    team3_score = float(current_score[2])
                     # 1 Case   # For example Game W - D - L (3 - 1 - 0)
-                    if (team1score > team2score and team2score > team3score and team1score != team2score):
-                        if (currentcellcolor == REDCOLOR):
-                            playerscore = 3
-                            playerresult = 'W'
-                        elif (currentcellcolor == GREENCOLOR or currentcellcolor == GREENCOLOR2
-                              or currentcellcolor == GREENCOLOR3):
-                            playerscore = 1
-                            playerresult = 'D'
-                        if (currentcellcolor == BLUECOLOR):
-                            playerscore = 0
-                            playerresult = 'L'
+                    if team1_score > team2_score > team3_score and\
+                            team1_score is not team2_score:
+                        if current_cell_color == REDCOLOR:
+                            player_score = 3
+                            player_result = 'W'
+                        elif current_cell_color == GREENCOLOR or\
+                            current_cell_color == GREENCOLOR2 or\
+                                current_cell_color == GREENCOLOR3:
+                            player_score = 1
+                            player_result = 'D'
+                        if current_cell_color == BLUECOLOR:
+                            player_score = 0
+                            player_result = 'L'
                     # 2 Case   # For example Game D - D - L (1 - 1 - 0)
-                    elif (team1score == team2score and team2score > team3score):
-                        if (currentcellcolor == GREENCOLOR or currentcellcolor == REDCOLOR):
-                            playerscore = 2
-                            playerresult = 'D'
+                    elif team1_score == team2_score and team2_score > team3_score:
+                        if current_cell_color == GREENCOLOR or current_cell_color == REDCOLOR:
+                            player_score = 2
+                            player_result = 'D'
                         else:
-                            playerscore = 0
-                            playerresult = 'L'
+                            player_score = 0
+                            player_result = 'L'
                     # 3 Case   # For example Game W - D - D (3 - 1 - 1)
-                    elif (team1score > team2score and team2score == team3score):
-                        if (currentcellcolor == REDCOLOR):
-                            playerscore = 3
-                            playerresult = 'W'
+                    elif team1_score > team2_score == team3_score:
+                        if current_cell_color == REDCOLOR:
+                            player_score = 3
+                            player_result = 'W'
                         else:
-                            playerscore = 1
-                            playerresult = 'D'
+                            player_score = 1
+                            player_result = 'D'
                     # 4 Case   # For example Game D - D - D (1 - 1 - 1)
-                    elif (team1score == team2score and team2score == team3score):
-                        playerscore = 1
-                        playerresult = 'D'
-                # playerindex = PLAYERSLIST.index(playercell.value) + 1
-                # gamedateindex = DATESLIST.index(datecell.value) + 1
-                CURSOR.execute("SELECT PlayerID FROM Players WHERE PlayerName = '{0}';".format(playercell.value))
-                player_id = CURSOR.fetchone()
-                CURSOR.execute("SELECT SoccerGameID from soccergames WHERE SoccerGameDate = '{0}';".format(datecell.value))
-                game_date_id = CURSOR.fetchone()
-                CURSOR.execute(
-                    "INSERT IGNORE INTO MappingPlayersSoccerGames VALUES ( {0}, {1}, {2}, '{3}')".format(
-                        player_id[0], game_date_id[0],
-                        playerscore
-                        , playerresult))
-                CONNECTION.autocommit("Inserting to MappingPlayers")
+                    elif team1_score == team2_score and team2_score == team3_score:
+                        player_score = 1
+                        player_result = 'D'
+                self.cursor.execute("SELECT PlayerID FROM Players WHERE PlayerName = '{0}';".format(player_cell.value))
+                player_id = self.cursor.fetchone()
+                self.cursor.execute("SELECT SoccerGameID from SoccerGames "
+                                    "WHERE SoccerGameDate = '{0}';".format(date_cell.value))
+                game_date_id = self.cursor.fetchone()
+                self.cursor.execute("INSERT IGNORE INTO MappingPlayersSoccerGames "
+                                    "VALUES ( {0}, {1}, {2}, '{3}')".format(
+                                        player_id[0], game_date_id[0], player_score, player_result))
+                self.connection.autocommit("Inserting to MappingPlayers")
                 index += 1
-    #         Making INSERT for DB
             index = 0
 
-    def __init__(self, filepath):
-        self.file = filepath
-        self.wb = pyxl.load_workbook(filepath, data_only=True)
 
-
-# Correct Name
 class ParserFirstRange(ParserMain):
-
-    def getGamesDates(self, sheet):
-        CURSOR, CONNECTION = db.connection()
-
-        c, conn = db.connection()
-        datelist = []
+    def get_games_dates(self, sheet):
+        date_list = []
         for cell in sheet[1]:
-            if(cell.value == 'Оплата'):
+            if cell.value == 'Оплата':
                 break
-            if(type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != None
-               and sheet[(str)(cell.column) + (str)(cell.row + 1)].value != 'нэбыло'):
-                datelist.append(cell)
-                DATESLIST.append(cell.value)
-                CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
-                CONNECTION.autocommit("Add dates to SoccerGameDate")
-        return datelist
+            if type(cell.value) is datetime and\
+                    sheet[str(cell.column) + str(cell.row + 1)].value is not None and\
+                    sheet[str(cell.column) + str(cell.row + 1)].value != 'нэбыло':
+                date_list.append(cell)
+                GLOBAL_DATES_LIST.append(cell.value)
+                self.cursor.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
+                self.connection.autocommit("Add dates to SoccerGameDate")
+        return date_list
 
-
-
-    def getGamesScores(self, sheet):
-        scorelist = [[]]
+    @staticmethod
+    def get_games_scores(sheet):
+        score_list = [[]]
         for cell in sheet[2]:
-            score = (str)(cell.value)
-            if(cell.fill.start_color.index == YELLOWCOLOR):
+            score = str(cell.value)
+            if cell.fill.start_color.index == YELLOWCOLOR:
                 break
-            if(score != None and  score.find('-') != -1 and cell.fill.start_color.index != PURPLECOLOR
-               and cell.column != 'A'):
-                scorelist.append([score, cell.fill.start_color.index])
-        scorelist.pop(0)
-        return scorelist
+            if score is not None and  score.find('-') != -1 and\
+                cell.fill.start_color.index != PURPLECOLOR and\
+                    cell.column != 'A':
+                score_list.append([score, cell.fill.start_color.index])
+        score_list.pop(0)
+        return score_list
 
+    def delete_last_list_from_db(self, sheet):
+        title_year, title_month = self.get_data_from_sheet(sheet)
+        date_source = str(title_year) + '-' + title_month + '-' + '01'
+        normal_date = datetime.strptime(date_source, "%y-%m-%d").date()
+        self.cursor.execute("SELECT SoccerGameID FROM SoccerGames WHERE SoccerGameDate >= '{0}';".format(normal_date))
+        index_list = self.cursor.fetchall()
+        self.connection.autocommit('Get all indexes')
+        for index in index_list:
+            self.cursor.execute("DELETE FROM MappingPlayersSoccerGames WHERE SoccerGameID = {0}".format(int(index[0])))
+        self.connection.autocommit('Delete from MPSG one row')
 
-    def deletelastlistfromDB(self, sheet):
-        CURSOR, CONNECTION = db.connection()
-
-        titledata = sheet.title
-        titleyear = (str)(titledata[-2:])
-        titlemonth = (str)(titledata.replace(' ', '')[:-2])
-        datesrc = titleyear + '-' + titlemonth + '-' + '01'
-        normal_date = datetime.strptime(datesrc, "%y-%m-%d").date()
-        CURSOR.execute("SELECT SoccerGameID FROM SoccerGames WHERE SoccerGameDate >= '{0}';".format(normal_date))
-        indexlist = CURSOR.fetchall()
-        CONNECTION.autocommit('Get all indexes')
-        for index in indexlist:
-            CURSOR.execute("DELETE FROM MappingPlayersSoccerGames WHERE SoccerGameID = {0}".format((int)(index[0])))
-        CONNECTION.autocommit('Delete ofrom MPSG one row')
-
-
-    def run(self, sheet, lastpage):
-        self.getPlayersStats(sheet, self.getGamesDates(sheet), self.getPlayersFromSheet(sheet),
-                             self.getGamesScores(sheet))
+    def run(self, sheet):
+        self.get_player_stats(sheet, self.get_games_dates(sheet), self.get_players_from_sheet(sheet),
+                              self.get_games_scores(sheet))
 
 
 class ParserSecondRange(ParserMain):
-    def getGamesDates(self, sheet):
-        CURSOR, CONNECTION = db.connection()
-        datelist = []
+    def get_games_dates(self, sheet):
+        date_list = []
         for cell in sheet['B']:
-            if(cell.value == "дата"):
-                startcell = cell
+            if cell.value == "дата":
+                start_cell = cell
                 break
-        for cell in sheet[startcell.row]:
-            if(cell.value == 'Оплата'):
+        for cell in sheet[start_cell.row]:
+            if cell.value == 'Оплата':
                 break
-            if (type(cell.value) is datetime and sheet[(str)(cell.column) + (str)(cell.row - 1)].value != None):
-                datelist.append(cell)
-                DATESLIST.append(cell.value)
-                CURSOR.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
-                CONNECTION.autocommit("Add dates to SoccerGameDate")
-        return datelist
+            if type(cell.value) is datetime and\
+                    sheet[str(cell.column) + str(cell.row - 1)].value is not None:
+                date_list.append(cell)
+                GLOBAL_DATES_LIST.append(cell.value)
+                self.cursor.execute("INSERT IGNORE INTO SoccerGames (SoccerGameDate) VALUES('{0}')".format(cell.value))
+                self.connection.autocommit("Add dates to SoccerGameDate")
+        return date_list
 
-
-    def getGamesScores(self, sheet):
-        scorelist = [[]]
+    def get_games_scores(self, sheet):
+        score_list = [[]]
         for cell in sheet['B']:
             if cell.value == 'счет':
-                scorecell = cell
+                score_cell = cell
                 break
-        for cell in sheet[scorecell.row]:
-            score = (str)(cell.value)
-            if(score != None and score.find('-') != -1 and  cell.fill.start_color.index != PURPLECOLOR):
-                scorelist.append([score, cell.fill.start_color.index])
-        scorelist.pop(0)
-        return scorelist
-
+        for cell in sheet[score_cell.row]:
+            score = str(cell.value)
+            if score is not None and\
+                    score.find('-') != -1 and\
+                    cell.fill.start_color.index != PURPLECOLOR:
+                score_list.append([score, cell.fill.start_color.index])
+        score_list.pop(0)
+        return score_list
 
     def run(self, sheet):
-        self.getPlayersStats(sheet, self.getGamesDates(sheet), self.getPlayersFromSheet(sheet),
-                             self.getGamesScores(sheet))
+        self.get_player_stats(sheet, self.get_games_dates(sheet), self.get_players_from_sheet(sheet),
+                              self.get_games_scores(sheet))
 
 
-def getAllPlayersStats(filepath):
+def get_all_players_stats(self, file_path):
     db.recreateDB()
-    P = ParserMain(filepath)
-    P.getPlayersList(lastpage=False)
-    P.getAllGamesDates(lastpage=False)
-    for sheet in P.wb:
-        if ((len)(sheet.title) <= 4):
-            titledata = sheet.title
-            titleyear = (int)(titledata[-2:])
-            titlemonth = (int)(titledata.replace(' ', '')[:-2])
-            if (titleyear >= 14 or (titleyear >= 13 and titlemonth > 3)):
-                Parser = ParserFirstRange(filepath)
-                Parser.run(sheet, lastpage=False)
-                print(titledata + ' Complete!')
+    main_parser = ParserMain(file_path)
+    main_parser.get_player_list(lastpage=False)
+    main_parser.get_all_games_dates()
+    for sheet in main_parser.wb:
+        if len(sheet.title) <= 4:
+            title_year, title_month = self.get_data_from_sheet(sheet)
+            if title_year >= 14 or (title_year >= 13 and title_month > 3):
+                parser = ParserFirstRange(file_path)
+                parser.run(sheet)
+                print("Page {0}{1} completed!".format(title_year, title_month))
             else:
-                Parser = ParserSecondRange(filepath)
-                Parser.run(sheet)
-                print(titledata + ' Complete!')
+                parser = ParserSecondRange(file_path)
+                parser.run(sheet)
+                print("Page {0}{1} completed!".format(title_year, title_month))
 
 
 # This function will get info only from last list
-def updatePlayersStats(filepath):
-    P = ParserMain(filepath)
-    P.getPlayersList(lastpage=True)
-    P.getAllGamesDates(lastpage=True)
-    for sheet in P.wb:
-        if ((len)(sheet.title) <= 4):
-            Parser = ParserFirstRange(filepath)
-            Parser.run(sheet, lastpage=True)
+def update_players_stats(file_path):
+    main_parser = ParserMain(file_path)
+    main_parser.get_player_list(lastpage=True)
+    main_parser.get_all_games_dates()
+    for sheet in main_parser.wb:
+        if len(sheet.title) <= 4:
+            parser = ParserFirstRange(file_path)
+            parser.run(sheet)
             print(sheet.title + " Complete!")
             break

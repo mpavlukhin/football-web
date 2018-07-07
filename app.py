@@ -62,7 +62,7 @@ def get_login_info_update():
     ss.download_sheet()
 
     if admin_form_checker(login, password):
-        data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        data = dbw.update_players_stats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
         return redirect("/stats")
 
 
@@ -79,7 +79,7 @@ def get_login_info():
     ss.download_sheet()
 
     if admin_form_checker(login, password):
-        data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        data = dbw.get_all_players_stats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
         return redirect("/stats")
 
 
@@ -221,7 +221,7 @@ def web_proc_anti_sleep_handler_and_update():
     ss.download_sheet(file_name=file_new)
 
     if not ss.diff_xlsx(file_old, file_new):
-        dbw.updatePlayersStats(file_new)
+        dbw.update_players_stats(file_new)
         print('Statistics was updated')
 
     else:
