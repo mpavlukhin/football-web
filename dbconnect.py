@@ -3,9 +3,9 @@ import MySQLdb
 
 def connection(is_first=False):
     conn = MySQLdb.connect(host="e7qyahb3d90mletd.chr7pe7iynqr.eu-west-1.rds.amazonaws.com",
-                           user="vqpq0re2r4unjcpm",
-                           passwd="mu7nnhusacy3zijr",
-                           db='yksc2nhvbiqhmiow',
+                           user="vo4do4c5zrf8hdve",
+                           passwd="ibbdb9mxdxr6t0zr",
+                           db='nsru3v5twni2opge',
                            charset='utf8')
 
     c = conn.cursor()

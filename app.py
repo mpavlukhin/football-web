@@ -199,7 +199,7 @@ def get_error_page():
 
 @app.before_first_request
 def check_db_existence():
-    if not db.db_existence_checker('yksc2nhvbiqhmiow'):
+    if not db.db_existence_checker("nsru3v5twni2opge"):
         db.create_db()
 
 
