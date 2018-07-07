@@ -1,2 +1,3 @@
-# football-web
-Create web version of google docs score tables
+# Football Web Service
+This is web service of Mirantis football players statisctis. As a source data this service get google drive document. Then this document is parsed and presented in convinient view for users.
+
