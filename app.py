@@ -217,6 +217,7 @@ def web_proc_anti_sleep_handler_and_update():
     file_old = abs_path
     file_new = 'new-' + abs_path
 
+    os.rename(file_new, file_old)
     ss.download_sheet(file_name=file_new)
 
     if not ss.diff_xlsx(file_old, file_new):
