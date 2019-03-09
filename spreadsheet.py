@@ -1,6 +1,7 @@
 import urllib.request
 from itertools import zip_longest
 import xlrd
+import os
 
 
 def diff_xlsx(xlsx_one, xlsx_two):
@@ -28,3 +29,5 @@ def download_sheet(url='https://spreadsheets.google.com/feeds/download/spreadshe
                        'O6iJZus7ZXWoY8aBs7ZI&exportFormat=xlsx',
                    file_name='data/spreadsheets/Football-bigdata-v0.2.xlsx'):
     urllib.request.urlretrieve(url, file_name)
+    # Set 644 permissions to new file
+    os.chmod(file_name, 436)

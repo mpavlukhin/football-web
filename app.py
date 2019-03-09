@@ -30,6 +30,7 @@ def get_default_request_string():
 
     return request_str
 
+
 def admin_form_requester():
     login = request.form['login']
     password = request.form['password']
@@ -90,7 +91,6 @@ def get_stats_table():
     try:
         start = (request.args['start'])
         end = (request.args['end'])
-
     except:
         request_str = get_default_request_string()
         return redirect(request_str)
@@ -214,10 +214,9 @@ def web_proc_anti_sleep_handler_and_update():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
 
     abs_path = os.path.abspath("data/spreadsheets/Football-bigdata-v0.2.xlsx")
-    file_old = abs_path + '.old'
-    file_new = abs_path
+    file_old = abs_path
+    file_new = 'new-' + abs_path
 
-    os.rename(file_new, file_old)
     ss.download_sheet(file_name=file_new)
 
     if not ss.diff_xlsx(file_old, file_new):
@@ -228,6 +227,7 @@ def web_proc_anti_sleep_handler_and_update():
         print('Nothing to update')
 
     os.remove(file_old)
+
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
