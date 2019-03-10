@@ -3,7 +3,7 @@ import openpyxl as pyxl
 import numpy as np
 from datetime import datetime, date, time
 import dbconnect as db
-import mysqldb.connections
+import MySQLdb.connections
 
 
 BLUECOLOR = 'FF0000FF'
