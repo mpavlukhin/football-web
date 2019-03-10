@@ -7,9 +7,12 @@ import dbconnect as db
 import requests
 import os
 import spreadsheet as ss
+import spreadsheetdriveapi as ssgd
+import filecmp
 from html5print import HTMLBeautifier
 from werkzeug.contrib.fixers import ProxyFix
 from apscheduler.schedulers.background import BackgroundScheduler
+
 
 app = Flask(__name__)
 
@@ -20,6 +23,8 @@ dataSheet = None
 data = None
 
 FILELINK = 'https://docs.google.com/spreadsheets/d/1QH-AFYHk3lXJf-dG3FzhDwtO6iJZus7ZXWoY8aBs7ZI/edit?usp=sharing'
+FILE_TITLE = 'data/spreadsheets/Football-bigdata-v0.2.xlsx'
+
 
 
 def get_default_request_string():
@@ -60,10 +65,10 @@ def get_login_info_update():
     global data, dataSheet
 
     login, password = admin_form_requester()
-    ss.download_sheet()
+    ssgd.download_spreadsheet(FILE_TITLE)
 
     if admin_form_checker(login, password):
-        data = dbw.updatePlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        data = dbw.updatePlayersStats(FILE_TITLE)
         return redirect("/stats")
 
 
@@ -77,10 +82,11 @@ def get_login_info():
     global data, dataSheet
 
     login, password = admin_form_requester()
-    ss.download_sheet()
+    #ss.download_sheet()
+    ssgd.download_spreadsheet(FILE_TITLE)
 
     if admin_form_checker(login, password):
-        data = dbw.getAllPlayersStats('data/spreadsheets/Football-bigdata-v0.2.xlsx')
+        data = dbw.getAllPlayersStats(FILE_TITLE)
         return redirect("/stats")
 
 
@@ -213,14 +219,12 @@ def add_header(response):
 def web_proc_anti_sleep_handler_and_update():
     r = requests.get('https://football-web.herokuapp.com/refresh', timeout=20)
 
-    abs_path = os.path.abspath("data/spreadsheets/Football-bigdata-v0.2.xlsx")
+    abs_path = os.path.abspath(FILE_TITLE)
     file_old = abs_path
-    file_new = 'new-' + abs_path
+    file_new = abs_path.replace('.xlsx', '-new.xlsx')
+    ssgd.download_spreadsheet(file_new)
 
-    os.rename(file_new, file_old)
-    ss.download_sheet(file_name=file_new)
-
-    if not ss.diff_xlsx(file_old, file_new):
+    if not filecmp.cmp(file_old, file_new):
         dbw.updatePlayersStats(file_new)
         print('Statistics was updated')
 
@@ -228,6 +232,7 @@ def web_proc_anti_sleep_handler_and_update():
         print('Nothing to update')
 
     os.remove(file_old)
+    os.rename(file_new, file_old)
 
 
 app.wsgi_app = ProxyFix(app.wsgi_app)

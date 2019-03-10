@@ -3,7 +3,8 @@ import openpyxl as pyxl
 import numpy as np
 from datetime import datetime, date, time
 import dbconnect as db
-import MySQLdb.connections
+import mysqldb.connections
+
 
 BLUECOLOR = 'FF0000FF'
 REDCOLOR = 'FFFF0000'
@@ -21,10 +22,7 @@ PLAYERSLIST = []
 GLOBALPLAYERINDEX = 1
 GLOBALDATEINDEX = 1
 
-# CURSOR, CONNECTION = db.connection()
-# Заинсертить все имена и все даты как-то, после чего брать из списков DATELIST и PLAYERLIST по id (index + 1)
-# Понять как сделать обшую функцию для расчета статистики на текущей странице
-#
+
 class ParserMain():
     def getPlayersList(self, lastpage):
         CURSOR, CONNECTION = db.connection()
