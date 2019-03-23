@@ -1,11 +1,12 @@
 import MySQLdb
+import os
 
 
 def connection(is_first=False):
-    conn = MySQLdb.connect(host="e7qyahb3d90mletd.chr7pe7iynqr.eu-west-1.rds.amazonaws.com",
-                           user="vo4do4c5zrf8hdve",
-                           passwd="ibbdb9mxdxr6t0zr",
-                           db='nsru3v5twni2opge',
+    conn = MySQLdb.connect(host=os.environ.get("DB_HOST", "localhost"),
+                           user=os.environ.get("DB_USER", "root"),
+                           passwd=os.environ.get("DB_PASSWD", "root"),
+                           db=os.environ.get("DB", "localdb"),
                            charset='utf8')
 
     c = conn.cursor()
