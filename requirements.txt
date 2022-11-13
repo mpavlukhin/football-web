@@ -33,7 +33,6 @@ rsa==3.4.2
 six==1.10.0
 slimit==0.8.1
 sympy==1.1.1
-gunicorn==20.1.0
 tinycss2==0.5
 tzlocal==1.5.1
 uritemplate==3.0.0
